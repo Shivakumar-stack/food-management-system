@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donor Portal - FoodBridge</title>
+  <meta name="description" content="Open donor portal. Anyone can view this page; logged-in users can continue to donation tools.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/custom.css">
+  <script src="js/config.js"></script>
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .donor-portal-page {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #a7f3d0 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 2rem 1rem;
+    }
+
+    .donor-background-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.5;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .donor-background-orb--top-right {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, #34d399, #059669);
+      top: -150px;
+      right: -150px;
+      animation-delay: 0s;
+    }
+
+    .donor-background-orb--bottom-left {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #6ee7b7, #10b981);
+      bottom: -100px;
+      left: -100px;
+      animation-delay: 5s;
+    }
+
+    .donor-background-orb--center-left {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, #a7f3d0, #34d399);
+      top: 40%;
+      left: 5%;
+      animation-delay: 10s;
+    }
+
+    .donor-background-orb--center-right {
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, #d1fae5, #6ee7b7);
+      top: 20%;
+      right: 20%;
+      animation-delay: 7s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(20px, -20px) scale(1.05); }
+      50% { transform: translate(-15px, 15px) scale(0.95); }
+      75% { transform: translate(-20px, -15px) scale(1.02); }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 20px 10px rgba(5, 150, 105, 0.1);
+      }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .donor-portal-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .donor-logo {
+      animation: pulse-glow 3s infinite;
+    }
+
+    .donor-access-strip {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1px solid #a7f3d0;
+      border-radius: 14px;
+      color: #065f46;
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    .donor-action-button {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .donor-action-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .donor-action-button:hover::before {
+      left: 100%;
+    }
+
+    .donor-action-button--primary {
+      background: linear-gradient(135deg, #059669, #047857);
+    }
+
+    .donor-action-button--primary:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(5, 150, 105, 0.4);
+    }
+
+    .donor-action-button--secondary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      background: #ecfdf5;
+    }
+
+    .donor-action-button--ghost:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      background: #f9fafb;
+    }
+
+    .donor-action-button.is-restricted {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .donor-action-button.is-restricted:hover {
+      transform: none;
+    }
+
+    .grid-item {
+      animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .grid-item:nth-child(1) { animation-delay: 0.1s; }
+    .grid-item:nth-child(2) { animation-delay: 0.2s; }
+    .grid-item:nth-child(3) { animation-delay: 0.3s; }
+    .grid-item:nth-child(4) { animation-delay: 0.4s; }
+
+    .auth-grid-item {
+      animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .auth-grid-item:nth-child(1) { animation-delay: 0.5s; }
+    .auth-grid-item:nth-child(2) { animation-delay: 0.6s; }
+
+    .icon-wrapper {
+      transition: transform 0.3s ease;
+    }
+
+    .donor-action-button:hover .icon-wrapper {
+      transform: scale(1.15);
+    }
+  </style>
+</head>
+<body class="donor-portal-page">
+  <div class="donor-background-orb donor-background-orb--top-right"></div>
+  <div class="donor-background-orb donor-background-orb--bottom-left"></div>
+  <div class="donor-background-orb donor-background-orb--center-left"></div>
+  <div class="donor-background-orb donor-background-orb--center-right"></div>
+
+  <main class="donor-portal-card w-full max-w-2xl mx-4 rounded-3xl p-8 lg:p-12 relative z-10">
+    <header class="text-center mb-6">
+      <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-xl donor-logo">
+        <i class="fas fa-hand-holding-heart text-white text-3xl" aria-hidden="true"></i>
+      </div>
+      <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">Donor Portal</h1>
+      <p class="text-gray-600 leading-relaxed max-w-md mx-auto">Anyone can view this portal. Sign in with your user account to submit, track, and manage donations.</p>
+    </header>
+
+    <section id="donorAccessStrip" class="donor-access-strip px-5 py-3.5 text-sm mb-6 flex items-start gap-3">
+      <i class="fas fa-circle-info mt-0.5 text-emerald-600" aria-hidden="true"></i>
+      <p id="donorAccessText">Guest mode: you can browse this page. Login is required for donor actions.</p>
+    </section>
+
+    <div id="alertContainer" class="mb-6" aria-live="polite"></div>
+
+    <section class="grid sm:grid-cols-2 gap-4">
+      <a
+        href="donate.html"
+        class="donor-action-button donor-action-button--primary grid-item block w-full py-4 px-5 text-white rounded-xl font-semibold text-center flex items-center justify-center gap-3"
+        data-requires-auth="true"
+        data-action-label="start a donation"
+        data-requires-role="donor,admin"
+      >
+        <span class="icon-wrapper">
+          <i class="fas fa-heart text-lg"></i>
+        </span>
+        <span>Start Donation</span>
+      </a>
+
+      <a
+        href="dashboard.html"
+        class="donor-action-button donor-action-button--secondary grid-item block w-full py-4 px-5 border-2 border-emerald-200 text-emerald-700 rounded-xl font-semibold text-center flex items-center justify-center gap-3"
+        data-requires-auth="true"
+        data-action-label="open dashboard"
+      >
+        <span class="icon-wrapper">
+          <i class="fas fa-chart-line text-lg"></i>
+        </span>
+        <span>Open Dashboard</span>
+      </a>
+
+      <a
+        href="my-donations.html"
+        class="donor-action-button donor-action-button--secondary grid-item block w-full py-4 px-5 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold text-center flex items-center justify-center gap-3"
+        data-requires-auth="true"
+        data-action-label="view donation history"
+        data-requires-role="donor,admin"
+      >
+        <span class="icon-wrapper">
+          <i class="fas fa-list-check text-lg"></i>
+        </span>
+        <span>Donation History</span>
+      </a>
+
+      <a
+        href="live-map.html"
+        class="donor-action-button donor-action-button--ghost grid-item block w-full py-4 px-5 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold text-center flex items-center justify-center gap-3"
+      >
+        <span class="icon-wrapper">
+          <i class="fas fa-map-location-dot text-lg"></i>
+        </span>
+        <span>View Live Map</span>
+      </a>
+    </section>
+
+    <section id="guestAuthActions" class="grid grid-cols-2 gap-4 pt-6">
+      <a href="login.html" class="donor-action-button donor-action-button--ghost auth-grid-item block py-3.5 px-5 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-center flex items-center justify-center gap-2">
+        <i class="fas fa-sign-in-alt"></i>
+        <span>Log In</span>
+      </a>
+      <a href="signup.html?role=donor" class="donor-action-button donor-action-button--primary auth-grid-item block py-3.5 px-5 text-white rounded-xl font-medium text-center flex items-center justify-center gap-2">
+        <i class="fas fa-user-plus"></i>
+        <span>Create Account</span>
+      </a>
+    </section>
+
+  <script src="js/config.js" defer></script>
+  <script src="js/app.js" defer></script>
+  <script src="js/donor.js" defer></script>
+</body>
+</html>

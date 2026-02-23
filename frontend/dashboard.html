@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - FoodBridge</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="./css/styles.css?v=20260213c">
+  <link rel="stylesheet" href="./css/dashboard.css?v=20260218b">
+  <link rel="stylesheet" href="./css/custom.css">
+</head>
+<body class="dashboard-page loading">
+  <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="dashboard-shell" data-protected-content>
+    <aside class="dashboard-sidebar" id="dashboardSidebar" aria-label="Sidebar navigation">
+      <div class="sidebar-head">
+        <a class="dashboard-brand" href="index.html" aria-label="FoodBridge Home">
+          <span class="dashboard-brand-icon"><i class="fas fa-hand-holding-heart"></i></span>
+          <span class="brand-text">FoodBridge</span>
+        </a>
+        <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar">
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
+      </div>
+
+      <nav class="dashboard-links" aria-label="Primary navigation">
+        <a class="dashboard-link active" href="dashboard.html" data-role="donor,volunteer,ngo,admin">
+          <i class="fa-solid fa-chart-line dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Dashboard</span>
+        </a>
+        <a class="dashboard-link" href="donate.html" data-role="donor">
+          <i class="fa-solid fa-hand-holding-heart dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Donate</span>
+        </a>
+        <a class="dashboard-link" href="my-donations.html" data-role="donor">
+          <i class="fa-solid fa-box-open dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Donations</span>
+        </a>
+        <a class="dashboard-link" href="volunteer-pickups.html" data-role="volunteer">
+          <i class="fa-solid fa-truck dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Pickups</span>
+        </a>
+        <a class="dashboard-link" href="ngo-claims.html" data-role="ngo">
+          <i class="fa-solid fa-building dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Claims</span>
+        </a>
+        <a class="dashboard-link" href="admin-analytics.html" data-role="admin">
+          <i class="fa-solid fa-chart-simple dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Analytics</span>
+        </a>
+        <button type="button" class="dashboard-link dashboard-link-button" id="logoutBtn" data-role="donor,volunteer,ngo,admin">
+          <i class="fa-solid fa-arrow-right-from-bracket dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Sign Out</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p class="sidebar-meta-label">Workspace</p>
+        <p class="sidebar-meta-value" id="sidebarRoleLabel">Enterprise Panel</p>
+      </div>
+    </aside>
+
+    <div class="dashboard-backdrop" id="dashboardBackdrop" aria-hidden="true"></div>
+
+    <div class="dashboard-stage">
+      <header class="dashboard-topbar">
+        <div class="topbar-left">
+          <button type="button" class="sidebar-mobile-toggle" id="sidebarMobileToggle" aria-label="Open sidebar">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="topbar-title-wrap">
+            <p class="topbar-kicker">FoodBridge Console</p>
+            <h1 class="topbar-heading" data-page-heading>Dashboard</h1>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <label class="topbar-search" aria-label="Search dashboard">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search dashboard" autocomplete="off">
+          </label>
+
+          <button type="button" class="topbar-icon-btn topbar-notification-btn" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span class="topbar-badge">3</span>
+          </button>
+
+          <div class="topbar-profile" id="topbarProfile">
+            <button type="button" class="topbar-profile-btn" id="topbarProfileBtn" aria-expanded="false" aria-label="Open profile menu">
+              <span class="topbar-avatar" id="topbarAvatar">FB</span>
+              <span class="topbar-profile-meta">
+                <strong id="topbarUserName">Account</strong>
+                <small id="topbarUserRole">Team member</small>
+              </span>
+              <i class="fa-solid fa-chevron-down topbar-chevron"></i>
+            </button>
+            <div class="topbar-dropdown" id="topbarDropdown" role="menu" aria-hidden="true">
+              <a href="dashboard.html" class="topbar-dropdown-item" role="menuitem">View Dashboard</a>
+              <a href="index.html" class="topbar-dropdown-item" role="menuitem">Open Website</a>
+              <button type="button" class="topbar-dropdown-item" id="topbarLogoutBtn" role="menuitem">Sign out</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard-main">
+        <div class="dashboard-content">
+          <section class="dashboard-welcome">
+            <h2>Welcome back, <span id="userName">User</span></h2>
+            <p id="welcomeMessage">AI is matching your surplus to the communities in need.</p>
+          </section>
+
+          <section class="dashboard-grid-top">
+            <article class="dashboard-summary card-surface">
+              <div class="summary-block">
+                <span class="summary-icon"><i class="fa-solid fa-hand-holding-heart"></i></span>
+                <div class="summary-stat">
+                  <p class="summary-value" id="totalDonations">0</p>
+                  <p class="summary-label">Total Donations</p>
+                </div>
+              </div>
+
+              <div class="summary-block summary-block-right">
+                <span class="summary-icon"><i class="fa-solid fa-utensils"></i></span>
+                <div class="summary-stat">
+                  <p class="summary-value" id="totalServings">0</p>
+                  <p class="summary-label">Total Servings</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="dashboard-trend card-surface">
+              <h2>Weekly Donation Trends</h2>
+              <div class="trend-layout">
+                <div class="trend-y-axis" id="trendYAxis"></div>
+                <div class="trend-chart" id="trendChart"></div>
+              </div>
+              <div class="trend-axis" id="trendAxis"></div>
+              <p class="trend-change" id="trendChange"></p>
+            </article>
+          </section>
+
+          <section class="dashboard-status-strip card-surface" id="statusOverview" aria-label="Donation status summary">
+            <div class="status-strip-heading">
+              <h2>Status Snapshot</h2>
+              <p>Live distribution of your accessible donations</p>
+            </div>
+            <div class="status-strip-grid">
+              <article class="status-pill status-pill-pending">
+                <span class="status-pill-label">Pending</span>
+                <strong class="status-pill-value" id="statusCountPending">0</strong>
+              </article>
+              <article class="status-pill status-pill-claimed">
+                <span class="status-pill-label">Claimed</span>
+                <strong class="status-pill-value" id="statusCountClaimed">0</strong>
+              </article>
+              <article class="status-pill status-pill-closed">
+                <span class="status-pill-label">Closed</span>
+                <strong class="status-pill-value" id="statusCountClosed">0</strong>
+              </article>
+              <article class="status-pill status-pill-cancelled">
+                <span class="status-pill-label">Cancelled</span>
+                <strong class="status-pill-value" id="statusCountCancelled">0</strong>
+              </article>
+            </div>
+          </section>
+
+          <section class="dashboard-grid-bottom">
+            <article class="dashboard-impact card-surface">
+              <h2>Your Impact</h2>
+
+              <div class="impact-grid">
+                <div class="impact-item">
+                  <div class="impact-meta">
+                    <span><span class="impact-icon"><i class="fa-solid fa-utensils"></i></span>Total Donations</span>
+                    <strong id="impactDonationsValue">0</strong>
+                  </div>
+                  <div class="progress-track"><div class="progress-fill" id="donationsProgress"></div></div>
+                </div>
+
+                <div class="impact-item">
+                  <div class="impact-meta">
+                    <span><span class="impact-icon"><i class="fa-solid fa-heart"></i></span>Total Servings</span>
+                    <strong id="impactServingsValue">0</strong>
+                  </div>
+                  <div class="progress-track"><div class="progress-fill" id="servingsProgress"></div></div>
+                </div>
+
+                <div class="impact-item impact-item-wide">
+                  <div class="impact-meta">
+                    <span><span class="impact-icon"><i class="fa-solid fa-building"></i></span>Communities Served</span>
+                    <strong id="impactCommunitiesValue">0</strong>
+                  </div>
+                  <div class="progress-track"><div class="progress-fill" id="communitiesProgress"></div></div>
+                </div>
+              </div>
+            </article>
+
+            <div class="dashboard-stack">
+              <article class="dashboard-next card-surface">
+                <h2>Next Pickup</h2>
+                <div class="next-pickup-row">
+                  <i class="fa-regular fa-calendar"></i>
+                  <span id="nextPickupText">No pickups scheduled</span>
+                </div>
+              </article>
+
+              <article class="quick-donate card-surface">
+                <a class="quick-donate-btn" href="donate.html">Quick Donate</a>
+                <span class="quick-donate-plus"><i class="fa-solid fa-plus"></i></span>
+              </article>
+            </div>
+
+            <div class="dashboard-stack">
+              <article class="dashboard-pending card-surface">
+                <div class="pending-title">
+                  <h2>Pending Requests (<span id="pendingCountMain">0</span>)</h2>
+                  <button type="button" id="viewAllPendingBtn" class="pending-view-all">View all</button>
+                </div>
+                <ul class="pending-list" id="pendingListMain"></ul>
+              </article>
+            </div>
+          </section>
+
+          <section id="donorPanel" class="card-surface role-panel" style="display:none;">
+            <h2>Donor Controls</h2>
+            <p>Use the Quick Donate card above to create a new donation.</p>
+          </section>
+
+          <section id="volunteerPanel" class="card-surface role-panel" style="display:none;">
+            <h2>Volunteer Controls</h2>
+            <p>You can manage your assigned pickups here.</p>
+          </section>
+
+          <section id="ngoPanel" class="card-surface role-panel" style="display:none;">
+            <h2>NGO Controls</h2>
+            <p>Review and claim available donations.</p>
+          </section>
+
+          <section id="adminPanel" class="card-surface role-panel" style="display:none;">
+            <h2>Admin Controls</h2>
+            <p>View all donations and manage platform activity.</p>
+          </section>
+        </div>
+      </main>
+    </div>
+  <div id="footer-placeholder"></div>
+
+  <script>
+    fetch('unified-footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
+  </script>
+  <script src="./js/config.js?v=20260214a" defer></script>
+  <script src="./js/app.js?v=20260214c" defer></script>
+  <script src="./js/auth-guard.js?v=20260214a" defer></script>
+  <script src="./js/dashboard-layout.js?v=20260218b" defer></script>
+  <script src="./js/dashboard.js?v=20260218a" defer></script>
+</body>
+</html>

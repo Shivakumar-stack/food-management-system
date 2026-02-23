@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Map - FoodBridge Karnataka</title>
+  <meta name="description" content="Real-time tracking of food donations, pickups, and deliveries across Karnataka.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/custom.css">
+
+</head>
+<body class="font-sans text-gray-800 bg-gray-50 antialiased">
+  
+  <!-- Navigation -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 lg:h-20">
+      <!-- Logo -->
+      <a href="index.html" class="flex items-center gap-2 group">
+        <div class="w-10 h-10 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+          <i class="fas fa-hand-holding-heart text-white text-lg"></i>
+        </div>
+        <span class="text-xl font-bold text-gray-900">FoodBridge</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex items-center gap-8">
+        <a href="index.html" class="nav-link text-gray-600 hover:text-emerald-600 font-medium transition-colors">Home</a>
+        <a href="about.html" class="nav-link text-gray-600 hover:text-emerald-600 font-medium transition-colors">About</a>
+        <a href="how-it-works.html" class="nav-link text-gray-600 hover:text-emerald-600 font-medium transition-colors">How It Works</a>
+        <a href="donate.html" class="nav-link text-gray-600 hover:text-emerald-600 font-medium transition-colors">Donate</a>
+        <a href="volunteer.html" class="nav-link text-gray-600 hover:text-emerald-600 font-medium transition-colors">Volunteer</a>
+        <a href="live-map.html" class="nav-link text-gray-600 hover:text-emerald-600 font-medium transition-colors">Live Map</a>
+      </div>
+
+      <!-- Auth Actions -->
+      <div id="navActions" class="hidden lg:flex items-center gap-3">
+        <a href="login.html" class="px-4 py-2 text-gray-700 hover:text-emerald-600 font-medium transition-colors">Log In</a>
+        <a href="signup.html" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all">Get Started</a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="menuBtn" class="lg:hidden p-2 bg-emerald-50 rounded-lg text-gray-700 hover:bg-emerald-100 transition-colors" aria-label="Toggle menu" aria-expanded="false">
+        <i class="fas fa-bars text-xl" id="menuIcon"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="lg:hidden hidden bg-white border-t border-gray-100">
+    <div class="px-4 py-4 space-y-2">
+      <a href="index.html" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">Home</a>
+      <a href="about.html" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">About</a>
+      <a href="how-it-works.html" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">How It Works</a>
+      <a href="donate.html" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">Donate</a>
+      <a href="volunteer.html" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">Volunteer</a>
+      <a href="live-map.html" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">Live Map</a>
+      <div id="mobileAuth" class="pt-4 border-t border-gray-100 space-y-2">
+        <a href="login.html" class="block w-full px-4 py-3 text-center border-2 border-emerald-200 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-50 transition-colors">Log In</a>
+        <a href="signup.html" class="block w-full px-4 py-3 text-center bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold rounded-xl">Get Started</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+  <!-- Main Content -->
+  <main id="liveMapContent" class="pt-16">
+    
+    <!-- Hero Section -->
+    <section class="live-map-hero py-12 lg:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+              <span class="text-white/80 text-sm font-semibold tracking-wide uppercase">Live Tracking Active</span>
+            </div>
+            <h1 class="text-3xl lg:text-5xl font-extrabold text-white mb-3 leading-tight">Food Rescue Live Map</h1>
+            <p class="text-white/80 max-w-2xl">See active donation flows in real time. Browse availability instantly, filter by urgency, and track impact across districts.</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <span id="heroDistrictCount" class="live-map-kpi">
+              <i class="fas fa-map-marker-alt mr-2"></i>0 Districts
+            </span>
+            <span id="heroActiveCount" class="live-map-kpi">
+              <i class="fas fa-bolt mr-2"></i>0 Live Donations
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Map Section with Bordered Container -->
+    <section class="py-8 lg:py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Map Card Container -->
+        <div id="mapWrapper" class="map-wrapper relative bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+          
+          <!-- Map Header -->
+          <div class="px-4 lg:px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-slate-50 to-emerald-50/60">
+            <div class="map-command-strip mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-map-marked-alt text-emerald-600"></i>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Live Map View</h3>
+                  <p class="text-xs text-gray-500" id="mapViewSubtitle">Loading role view...</p>
+                </div>
+              </div>
+              <div class="map-command-right">
+                <span class="map-scope-pill" id="mapDataScopeLabel">Live donation feed</span>
+                <label class="map-search-shell" for="mapSearchInput">
+                  <i class="fas fa-magnifying-glass text-slate-400 text-xs"></i>
+                  <input id="mapSearchInput" type="text" class="map-search-input" placeholder="Search food, donor, city">
+                </label>
+                <span id="visibleDonationsCount" class="map-count-pill">0 visible</span>
+              </div>
+            </div>
+
+            <div id="mapAccessNotice" class="mb-3 px-3 py-2 rounded-xl border border-emerald-200 bg-emerald-50 text-sm text-emerald-800 flex flex-wrap items-center justify-between gap-2">
+              <p id="mapAccessNoticeText" class="font-medium">Guest mode: viewing public map data. Log in with your account to claim or accept donations.</p>
+              <a id="mapAccessNoticeAction" href="login.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors">
+                <i class="fas fa-user-check"></i>
+                <span>Connect Account</span>
+              </a>
+            </div>
+
+            <!-- Map Controls -->
+            <div class="flex items-center gap-2 flex-wrap justify-end">
+              <select id="urgencyFilter" class="hidden px-2 py-1.5 text-xs border border-gray-200 rounded-lg bg-white text-gray-700">
+                <option value="all">All Urgency</option>
+                <option value="critical">Critical</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+              <select id="radiusFilter" class="px-2 py-1.5 text-xs border border-gray-200 rounded-lg bg-white text-gray-700" title="Filter by distance from your location">
+                <option value="all">All Distances</option>
+                <option value="5">Within 5 km</option>
+                <option value="10">Within 10 km</option>
+              </select>
+              <button id="heatmapToggleBtn" class="px-3 py-2 text-sm text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-2" title="Enable heatmap">
+                <i class="fas fa-fire"></i>
+                <span class="hidden sm:inline">Heatmap Off</span>
+              </button>
+              <button onclick="MapModule.resetView()" class="px-3 py-2 text-sm text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors" title="Reset View">
+                <i class="fas fa-compress-arrows-alt"></i>
+              </button>
+              <button onclick="MapModule.refreshData()" class="px-3 py-2 text-sm text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors" title="Refresh Data">
+                <i class="fas fa-rotate"></i>
+              </button>
+              <button onclick="MapModule.locateUser()" class="px-3 py-2 text-sm text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors" title="My Location">
+                <i class="fas fa-crosshairs"></i>
+              </button>
+              <button id="interactionToggleBtn" class="px-3 py-2 text-sm text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-2" title="Enable map interaction">
+                <i class="fas fa-lock"></i>
+                <span class="hidden sm:inline">Enable Map</span>
+              </button>
+              <button id="expandMapBtn" class="expand-btn px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium flex items-center gap-2" title="Expand Map">
+                <i class="fas fa-expand"></i>
+                <span class="hidden sm:inline">Expand</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Map Container -->
+          <div id="mapViewport" class="relative">
+            <div id="map"></div>
+            
+            <!-- Map Legend Overlay -->
+            <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur rounded-xl shadow-lg border border-gray-100 p-3 z-[400]">
+              <p class="text-xs font-semibold text-gray-700 mb-2">Legend</p>
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                  <span class="text-xs text-gray-600">Critical Priority</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                  <span class="text-xs text-gray-600">Medium Priority</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                  <span class="text-xs text-gray-600">Low Priority</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detail Drawer -->
+            <aside id="mapDetailDrawer" class="map-detail-drawer" aria-hidden="true">
+              <button id="mapDetailCloseBtn" type="button" class="map-detail-close" aria-label="Close details">
+                <i class="fas fa-xmark"></i>
+              </button>
+              <div id="mapDetailContent" class="map-detail-content">
+                <p class="map-detail-empty">Select a marker to view donation details.</p>
+              </div>
+            </aside>
+          </div>
+          
+          <!-- Map Footer -->
+          <div class="px-4 lg:px-6 py-3 border-t border-gray-100 bg-gray-50/50 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-4 text-sm text-gray-600">
+              <span><i class="fas fa-circle text-emerald-500 text-xs mr-1"></i> Live Updates</span>
+              <span><i class="fas fa-sync-alt text-emerald-600 text-xs mr-1"></i> Auto-refresh</span>
+              <span id="mapInteractionStatus"><i class="fas fa-lock-open text-emerald-600 text-xs mr-1"></i> Map interactive</span>
+            </div>
+            <p class="text-xs text-gray-500" id="mapLastUpdated">Last updated: --</p>
+          </div>
+        </div>
+        
+        <!-- Fullscreen Overlay (hidden by default) -->
+        <div id="mapOverlay" class="map-overlay hidden"></div>
+      </div>
+    </section>
+
+    <!-- Live Stats Section -->
+    <section class="py-8 lg:py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Today's Activity</h2>
+          <p class="text-gray-600">Real-time statistics from across Karnataka</p>
+        </div>
+        
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <!-- Stat 1 -->
+          <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 text-center border border-emerald-200">
+            <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <i class="fas fa-hand-holding-heart text-white text-xl"></i>
+            </div>
+            <div class="stat-value text-3xl font-bold text-emerald-600">24</div>
+            <p class="text-sm text-gray-600 mt-1">Active Donations</p>
+          </div>
+          
+          <!-- Stat 2 -->
+          <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl p-6 text-center border border-emerald-200">
+            <div class="w-12 h-12 bg-emerald-400 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <i class="fas fa-truck text-white text-xl"></i>
+            </div>
+            <div class="stat-value text-3xl font-bold text-emerald-500">18</div>
+            <p class="text-sm text-gray-600 mt-1">In Transit</p>
+          </div>
+          
+          <!-- Stat 3 -->
+          <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 text-center border border-amber-200">
+            <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <i class="fas fa-utensils text-white text-xl"></i>
+            </div>
+            <div class="stat-value text-3xl font-bold text-amber-600">1,240</div>
+            <p class="text-sm text-gray-600 mt-1">Meals Today</p>
+          </div>
+          
+          <!-- Stat 4 -->
+          <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 text-center border border-emerald-200">
+            <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <i class="fas fa-check-circle text-white text-xl"></i>
+            </div>
+            <div class="stat-value text-3xl font-bold text-emerald-600">42</div>
+            <p class="text-sm text-gray-600 mt-1">Delivered</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Activity & Districts Grid -->
+    <section class="py-8 lg:py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-6 lg:gap-8">
+          
+          <!-- Recent Activity Feed -->
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
+              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="font-bold text-gray-900 flex items-center gap-2">
+                  <i class="fas fa-stream text-emerald-600"></i>
+                  Recent Activity
+                </h3>
+                <span class="text-xs text-gray-500">Live updates</span>
+              </div>
+              
+              <div class="p-4 space-y-3">
+                <!-- Activity Item 1 -->
+                <div class="activity-card flex items-start gap-4 p-4 rounded-xl bg-gray-50 cursor-pointer">
+                  <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-hand-holding-heart text-emerald-600"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="font-medium text-gray-900 truncate">New donation from Taj West End</p>
+                      <span class="text-xs text-gray-500 flex-shrink-0">2 min ago</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">50 meals available • Bangalore Urban</p>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full">Donor</span>
+                      <span class="text-xs text-gray-500">Contact: Rahul</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Activity Item 2 -->
+                <div class="activity-card flex items-start gap-4 p-4 rounded-xl bg-gray-50 cursor-pointer">
+                  <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-truck text-emerald-500"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="font-medium text-gray-900 truncate">Pickup completed by Amit Sharma</p>
+                      <span class="text-xs text-gray-500 flex-shrink-0">8 min ago</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">30 meals picked up • Belgaum</p>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full">Volunteer</span>
+                      <span class="text-xs text-emerald-600"><i class="fas fa-check mr-1"></i>Completed</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Activity Item 3 -->
+                <div class="activity-card flex items-start gap-4 p-4 rounded-xl bg-gray-50 cursor-pointer">
+                  <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-check text-emerald-600"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="font-medium text-gray-900 truncate">Delivery to Akshaya Patra</p>
+                      <span class="text-xs text-gray-500 flex-shrink-0">15 min ago</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">25 meals delivered • Hubli-Dharwad</p>
+                    <div class="flex items-center gap-2 mt-2">
+                      <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">NGO</span>
+                      <span class="text-xs text-emerald-600"><i class="fas fa-heart mr-1"></i>Received</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Activity Item 4 -->
+                <div class="activity-card flex items-start gap-4 p-4 rounded-xl bg-gray-50 cursor-pointer">
+                  <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-hand-holding-heart text-emerald-600"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="font-medium text-gray-900 truncate">New donation from Radisson Blu</p>
+                      <span class="text-xs text-gray-500 flex-shrink-0">22 min ago</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">30 meals • Vegetarian thali • Mysore</p>
+                    <div class="flex items-center gap-2 mt-2">
+                      <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full">Donor</span>
+                      <span class="text-xs text-emerald-600"><i class="fas fa-clock mr-1"></i>Pending</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Activity Item 5 -->
+                <div class="activity-card flex items-start gap-4 p-4 rounded-xl bg-gray-50 cursor-pointer">
+                  <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user-plus text-emerald-500"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="font-medium text-gray-900 truncate">New volunteer registered</p>
+                      <span class="text-xs text-gray-500 flex-shrink-0">35 min ago</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">Meera Patel joined • Shivamogga region</p>
+                    <div class="flex items-center gap-2 mt-2">
+                      <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full">Volunteer</span>
+                      <span class="text-xs text-blue-600"><i class="fas fa-user-check mr-1"></i>Active</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="px-6 py-4 border-t border-gray-100 text-center">
+                <button class="text-emerald-700 hover:text-emerald-800 font-medium text-sm">
+                  View All Activity <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Districts Sidebar -->
+          <div>
+            <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
+              <div class="px-6 py-4 border-b border-gray-100">
+                <h3 class="font-bold text-gray-900 flex items-center gap-2">
+                  <i class="fas fa-map text-emerald-600"></i>
+                  Active Districts
+                </h3>
+              </div>
+              
+              <div class="p-4 space-y-2">
+                <!-- District Item -->
+                <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <span class="text-xs font-bold text-emerald-700">BLR</span>
+                    </div>
+                    <div>
+                      <p class="font-medium text-gray-900 text-sm">Bangalore Urban</p>
+                      <p class="text-xs text-gray-500">8 donations</p>
+                    </div>
+                  </div>
+                  <span class="text-xs font-medium text-emerald-700">12 meals</span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <span class="text-xs font-bold text-emerald-700">MYS</span>
+                    </div>
+                    <div>
+                      <p class="font-medium text-gray-900 text-sm">Mysore</p>
+                      <p class="text-xs text-gray-500">5 donations</p>
+                    </div>
+                  </div>
+                  <span class="text-xs font-medium text-emerald-700">8 meals</span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                      <span class="text-xs font-bold text-amber-600">HUB</span>
+                    </div>
+                    <div>
+                      <p class="font-medium text-gray-900 text-sm">Hubli-Dharwad</p>
+                      <p class="text-xs text-gray-500">3 donations</p>
+                    </div>
+                  </div>
+                  <span class="text-xs font-medium text-amber-600">5 meals</span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <span class="text-xs font-bold text-emerald-700">MGL</span>
+                    </div>
+                    <div>
+                      <p class="font-medium text-gray-900 text-sm">Mangalore</p>
+                      <p class="text-xs text-gray-500">4 donations</p>
+                    </div>
+                  </div>
+                  <span class="text-xs font-medium text-emerald-700">6 meals</span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <span class="text-xs font-bold text-emerald-700">BLM</span>
+                    </div>
+                    <div>
+                      <p class="font-medium text-gray-900 text-sm">Belgaum</p>
+                      <p class="text-xs text-gray-500">2 donations</p>
+                    </div>
+                  </div>
+                  <span class="text-xs font-medium text-emerald-700">3 meals</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="mt-6 bg-gradient-to-br from-emerald-600 to-emerald-400 rounded-2xl p-6 text-white">
+              <h4 class="font-bold mb-2">Want to Help?</h4>
+              <p class="text-sm text-white/80 mb-4">Join our network of donors and volunteers in Karnataka.</p>
+              <div class="space-y-2">
+                <a href="donate.html" class="block w-full py-2.5 bg-white text-emerald-700 text-center rounded-lg font-medium text-sm hover:bg-emerald-50 transition-colors">
+                  <i class="fas fa-hand-holding-heart mr-2"></i>Donate Food
+                </a>
+                <a href="volunteer.html" class="block w-full py-2.5 bg-white/20 text-white text-center rounded-lg font-medium text-sm hover:bg-white/30 transition-colors">
+                  <i class="fas fa-truck mr-2"></i>Become Volunteer
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Donor/Volunteer Spotlight -->
+    <section class="py-8 lg:py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Community Spotlight</h2>
+          <p class="text-gray-600">Meet our top contributors this week</p>
+        </div>
+        
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Spotlight 1 -->
+          <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 border border-emerald-200">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">TS</div>
+              <div>
+                <h4 class="font-bold text-gray-900">Taj West End</h4>
+                <p class="text-sm text-emerald-700">Top Donor</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-600">This week:</span>
+              <span class="font-bold text-emerald-700">250 meals</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-emerald-200">
+              <p class="text-xs text-gray-500"><i class="fas fa-map-marker-alt"></i> Bangalore Urban • 12 donations</p>
+            </div>
+          </div>
+          
+          <!-- Spotlight 2 -->
+          <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl p-6 border border-emerald-200">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-14 h-14 bg-emerald-400 rounded-full flex items-center justify-center text-white font-bold text-lg">AS</div>
+              <div>
+                <h4 class="font-bold text-gray-900">Amit Sharma</h4>
+                <p class="text-sm text-emerald-700">Star Volunteer</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-600">This week:</span>
+              <span class="font-bold text-emerald-500">18 pickups</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-emerald-200">
+              <p class="text-xs text-gray-500"><i class="fas fa-map-marker-alt"></i> Belgaum • 4.9★ rating</p>
+            </div>
+          </div>
+          
+          <!-- Spotlight 3 -->
+          <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 border border-amber-200">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-14 h-14 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold text-lg">AP</div>
+              <div>
+                <h4 class="font-bold text-gray-900">Akshaya Patra</h4>
+                <p class="text-sm text-amber-600">Top NGO</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-600">This week:</span>
+              <span class="font-bold text-amber-600">500 meals</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-amber-200">
+              <p class="text-xs text-gray-500"><i class="fas fa-map-marker-alt"></i> Hubli-Dharwad • 850 beneficiaries</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZQXlgwuqnhzQGBC+HbyIVXqYhw0=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script src="js/config.js" defer></script>
+  
+  <script src="js/app.js" defer></script>
+  <script src="js/auth-guard.js" defer></script>
+  <script src="js/live-map.js?v=20260217b" defer></script>
+</body>
+</html>

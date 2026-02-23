@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - FoodBridge</title>
+  <meta name="description" content="Create your FoodBridge account to start donating food, volunteering, or managing your NGO.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/custom.css">
+  
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .signup-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-input-error { 
+      border-color: #DC2626 !important; 
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.1); 
+    }
+    
+    .form-error { 
+      color: #DC2626; 
+      margin-top: 0.5rem; 
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    
+    .alert { 
+      padding: 1rem; 
+      border-radius: 0.75rem; 
+      display: flex; 
+      gap: 0.75rem; 
+      align-items: flex-start;
+      font-size: 0.875rem;
+    }
+    
+    .alert-success { 
+      background: #f0fdf4; 
+      color: #166534; 
+      border: 1px solid #bbf7d0; 
+    }
+    
+    .alert-error { 
+      background: #fef2f2; 
+      color: #991b1b; 
+      border: 1px solid #fecaca; 
+    }
+    
+    .signup-card {
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 8px 20px rgba(5,150,105,0.1);
+      border: 1px solid #a7f3d0;
+    }
+    
+    .step-indicator {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all 0.3s ease;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    
+    .step-indicator.active {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: white;
+    }
+    
+    .step-indicator.completed {
+      background: #10b981;
+      color: white;
+    }
+    
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: #e5e7eb;
+      margin: 0 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .step-line.active {
+      background: linear-gradient(90deg, #059669, #047857);
+    }
+    
+    .form-step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .step-indicator.active {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: white;
+    }
+    
+    .step-line.active {
+      background: linear-gradient(90deg, #059669, #047857);
+    }
+    
+    .role-card:hover {
+      border-color: #059669;
+      background: #ecfdf5;
+    }
+    
+    .role-card.selected {
+      border-color: #047857;
+      background: #ecfdf5;
+      box-shadow: 0 4px 12px rgba(5,150,105,0.15);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: white;
+      padding: 0.875rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(5,150,105,0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(5,150,105,0.4);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #374151;
+      padding: 0.875rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      border: 2px solid #e5e7eb;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-secondary:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+    
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      background: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .social-btn:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+    
+    .input-field {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.75rem;
+      font-size: 0.9375rem;
+      transition: all 0.2s ease;
+      background: white;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #34d399;
+      box-shadow: 0 0 0 4px rgba(52,211,153,0.1);
+    }
+    
+    .input-with-icon {
+      position: relative;
+    }
+    
+    .input-with-icon i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+    }
+    
+    .input-with-icon input {
+      padding-left: 2.75rem;
+    }
+    
+    @media (max-width: 640px) {
+      .signup-card {
+        border-radius: 1rem;
+        margin: 0 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="signup-container">
+  
+  <!-- Background Image -->
+  <div class="fixed inset-0 z-0">
+    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1920&q=80&auto=format&fit=crop" 
+         alt="Fresh healthy food" 
+         class="w-full h-full object-cover"
+         onerror="this.style.display='none'">
+    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/95 via-white/90 to-emerald-100/95"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="relative z-10 w-full py-4 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
+          <i class="fas fa-hand-holding-heart text-white text-lg"></i>
+        </div>
+        <span class="text-xl font-bold text-gray-900">FoodBridge</span>
+      </a>
+      <a href="index.html" class="text-gray-600 hover:text-emerald-600 font-medium transition-colors flex items-center gap-2">
+        <i class="fas fa-arrow-left text-sm"></i>
+        Back to Home
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
+    <div class="w-full max-w-xl">
+      
+      <!-- Signup Card -->
+      <div class="signup-card p-6 sm:p-8 lg:p-10">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-600/25">
+            <i class="fas fa-user-plus text-white text-2xl"></i>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Create Your Account</h1>
+          <p class="text-gray-600">Join our community to fight food waste and hunger</p>
+        </div>
+
+        <!-- Step Progress -->
+        <div class="flex items-center justify-center mb-8">
+          <div class="step-indicator active" data-step="1">1</div>
+          <div class="step-line" data-line="1"></div>
+          <div class="step-indicator" data-step="2">2</div>
+          <div class="step-line" data-line="2"></div>
+          <div class="step-indicator" data-step="3">3</div>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer" class="mb-6"></div>
+
+        <!-- Signup Form -->
+        <form id="signupForm">
+          
+          <!-- Step 1: Personal Information -->
+          <div class="form-step active" data-step="1">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
+            
+            <div class="space-y-4">
+              <!-- Name Row -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1.5">First Name</label>
+                  <input 
+                    type="text" 
+                    id="firstName"
+                    name="firstName"
+                    class="input-field"
+                    placeholder="John"
+                    required
+                  >
+                </div>
+                <div>
+                  <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1.5">Last Name</label>
+                  <input 
+                    type="text" 
+                    id="lastName"
+                    name="lastName"
+                    class="input-field"
+                    placeholder="Doe"
+                    required
+                  >
+                </div>
+              </div>
+              
+              <!-- Email -->
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-envelope"></i>
+                  <input 
+                    type="email" 
+                    id="email"
+                    name="email"
+                    class="input-field"
+                    placeholder="you@example.com"
+                    required
+                  >
+                </div>
+              </div>
+              
+              <!-- Phone -->
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-phone"></i>
+                  <input 
+                    type="tel" 
+                    id="phone"
+                    name="phone"
+                    class="input-field"
+                    placeholder="+91 98765 43210"
+                  >
+                </div>
+                <p class="text-xs text-gray-500 mt-1.5">We'll only use this for donation coordination</p>
+              </div>
+            </div>
+            
+            <button type="button" class="next-step-btn btn-primary w-full mt-6 flex items-center justify-center gap-2">
+              Continue
+              <i class="fas fa-arrow-right text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Step 2: Select Role -->
+          <div class="form-step" data-step="2">
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">Select Your Role</h2>
+            <p class="text-sm text-gray-600 mb-5">Choose how you want to participate</p>
+            
+            <div class="space-y-3">
+              <!-- Donor Option -->
+              <label class="role-card flex items-center gap-4 cursor-pointer" onclick="selectRole(this)">
+                <input type="radio" name="role" value="donor" checked>
+                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-hand-holding-heart text-emerald-600 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900">Food Donor</h3>
+                  <p class="text-sm text-gray-500">Restaurants, hotels, caterers, individuals</p>
+                </div>
+                <i class="fas fa-check-circle text-emerald-600 opacity-0 check-icon"></i>
+              </label>
+              
+              <!-- Volunteer Option -->
+              <label class="role-card flex items-center gap-4 cursor-pointer" onclick="selectRole(this)">
+                <input type="radio" name="role" value="volunteer">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-hands-helping text-blue-600 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900">Volunteer</h3>
+                  <p class="text-sm text-gray-500">Pickup and deliver food to those in need</p>
+                </div>
+                <i class="fas fa-check-circle text-emerald-600 opacity-0 check-icon"></i>
+              </label>
+              
+              <!-- NGO Option -->
+              <label class="role-card flex items-center gap-4 cursor-pointer" onclick="selectRole(this)">
+                <input type="radio" name="role" value="ngo">
+                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-building text-emerald-600 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900">NGO / Organization</h3>
+                  <p class="text-sm text-gray-500">Non-profits, shelters, food banks</p>
+                </div>
+                <i class="fas fa-check-circle text-emerald-600 opacity-0 check-icon"></i>
+              </label>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+              <button type="button" class="prev-step-btn btn-secondary flex-1">
+                <i class="fas fa-arrow-left text-sm mr-2"></i>
+                Back
+              </button>
+              <button type="button" class="next-step-btn btn-primary flex-1 flex items-center justify-center gap-2">
+                Continue
+                <i class="fas fa-arrow-right text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3: Create Password -->
+          <div class="form-step" data-step="3">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Create Password</h2>
+            
+            <div class="space-y-4">
+              <!-- Password -->
+              <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                <div class="input-with-icon relative">
+                  <i class="fas fa-lock"></i>
+                  <input 
+                    type="password" 
+                    id="password"
+                    name="password"
+                    class="input-field pr-12"
+                    placeholder="Min 6 characters"
+                    required
+                    minlength="6"
+                  >
+                  <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Confirm Password -->
+              <div>
+                <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-lock"></i>
+                  <input 
+                    type="password" 
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    class="input-field"
+                    placeholder="Re-enter your password"
+                    required
+                  >
+                </div>
+              </div>
+              
+              <!-- Terms -->
+              <label class="flex items-start gap-3 cursor-pointer mt-4">
+                <input type="checkbox" name="terms" class="w-5 h-5 text-emerald-600 border-gray-300 rounded mt-0.5" required>
+                <span class="text-sm text-gray-600 leading-relaxed">
+                  I agree to the <a href="#" class="text-emerald-600 hover:underline font-medium">Terms of Service</a> and 
+                  <a href="#" class="text-emerald-600 hover:underline font-medium">Privacy Policy</a>
+                </span>
+              </label>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+              <button type="button" class="prev-step-btn btn-secondary flex-1">
+                <i class="fas fa-arrow-left text-sm mr-2"></i>
+                Back
+              </button>
+              <button type="submit" id="submitBtn" class="btn-primary flex-1 flex items-center justify-center gap-2">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative my-8">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-200"></div>
+          </div>
+          <div class="relative flex justify-center">
+            <span class="px-4 bg-white text-sm text-gray-500">Or continue with</span>
+          </div>
+        </div>
+
+        <!-- Social Signup -->
+        <div class="grid grid-cols-3 gap-3">
+          <button type="button" class="social-btn" data-provider="google">
+            <i class="fab fa-google text-red-500 text-lg"></i>
+          </button>
+          <button type="button" class="social-btn" data-provider="facebook">
+            <i class="fab fa-facebook-f text-blue-600 text-lg"></i>
+          </button>
+          <button type="button" class="social-btn" data-provider="apple">
+            <i class="fab fa-apple text-gray-900 text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Login Link -->
+        <p class="text-center mt-6 text-gray-600 text-sm">
+          Already have an account? 
+          <a href="login.html" class="text-emerald-600 hover:text-emerald-700 font-semibold transition-colors">Log in</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/config.js" defer></script>
+  <script src="js/app.js" defer></script>
+  <script src="js/signup.js" defer></script>
+  
+  <script>
+    // Role selection visual feedback
+    function selectRole(element) {
+      document.querySelectorAll('.role-card').forEach(card => {
+        card.classList.remove('selected');
+        card.querySelector('.check-icon').classList.add('opacity-0');
+      });
+      element.classList.add('selected');
+      element.querySelector('.check-icon').classList.remove('opacity-0');
+      element.querySelector('input[type="radio"]').checked = true;
+    }
+    
+    // Initialize first role as selected
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstRole = document.querySelector('.role-card');
+      if (firstRole) {
+        firstRole.classList.add('selected');
+        firstRole.querySelector('.check-icon').classList.remove('opacity-0');
+      }
+    });
+  </script>
+</body>
+</html>
