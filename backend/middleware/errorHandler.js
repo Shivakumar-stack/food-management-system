@@ -11,7 +11,7 @@ class AppError extends Error {
   }
 }
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   const isProduction = process.env.NODE_ENV === 'production';
 
   logger.error('Error occurred:', {

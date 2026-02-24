@@ -49,7 +49,6 @@ function normalizeRequestedStatus(status) {
   return null;
 }
 
-const NON_EXPIRABLE_STATUSES = ['delivered', 'cancelled', 'expired'];
 const GEOCODE_TIMEOUT_MS = 4500;
 const GEOCODE_LOOKUP_MODE = String(process.env.GEOCODE_LOOKUP_MODE || 'fallback').toLowerCase();
 const GEOCODE_DEFAULT_COUNTRY = process.env.GEOCODE_DEFAULT_COUNTRY || 'India';
@@ -108,10 +107,6 @@ function getFallbackCoordinates(address) {
   const cityKey = normalizeCityKey(address?.city);
   if (!cityKey) return null;
   return CITY_COORDINATE_FALLBACKS[cityKey] || null;
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function geocodePickupAddress(address) {
@@ -1051,7 +1046,6 @@ exports.updateDonationStatus = async (req, res) => {
 
 exports.getAvailableDonationsForVolunteer = async (req, res) => {
     try {
-        const now = new Date();
         // await expireOldDonations(); // This logic needs to be revisited
         // await refreshPendingPriorityScores(now); // This logic needs to be revisited
 

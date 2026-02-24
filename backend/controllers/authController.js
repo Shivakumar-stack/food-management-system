@@ -1,5 +1,4 @@
 const { validationResult } = require('express-validator');
-const crypto = require('crypto');
 const User = require('../models/User');
 const Donation = require('../models/Donation');
 const Pickup = require('../models/Pickup');
@@ -371,7 +370,7 @@ const getDashboard = async (req, res, next) => {
  * @route   POST /api/auth/logout
  * @access  Private
  */
-const logout = async (req, res, next) => {
+const logout = async (req, res) => {
   // In a more complex implementation, you might blacklist the token
   res.json({
     success: true,

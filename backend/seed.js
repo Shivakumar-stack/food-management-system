@@ -1,5 +1,3 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const User = require('./models/User');
 const Donation = require('./models/Donation');
 const Pickup = require('./models/Pickup');
@@ -20,11 +18,9 @@ const seedData = async () => {
 
     // Hash the test password securely (for development/testing only)
     const testPassword = 'TestPassword123!';
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(testPassword, salt);
 
     // Create users using create() to trigger pre-save hooks
-    const admin = await User.create({
+    await User.create({
       firstName: 'Admin',
       lastName: 'User',
       email: 'admin@foodbridge.org',
