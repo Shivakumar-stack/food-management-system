@@ -1,132 +1,102 @@
+# Food Donation & Management Platform
 
-# FoodBridge: Food Donation & Management Platform
-
-[![CI](https://github.com/Shivakumar-stack/food-management-system/actions/workflows/ci.yml/badge.svg)](https://github.com/Shivakumar-stack/food-management-system/actions/workflows/ci.yml)
-
-FoodBridge is a full-stack web application designed to connect food donors (restaurants, hotels, individuals) with NGOs and volunteers. The platform facilitates the efficient collection and distribution of surplus food to those in need, reducing food waste and helping communities.
+A full-stack web application designed to facilitate food donation and distribution. This platform connects donors with surplus food to NGOs and volunteers, helping to reduce food waste and feed those in need. It features a real-time map for pickups, a dashboard for managing donations, and analytics for tracking impact.
 
 ## ✨ Features
 
-- **Role-Based Access Control:** Separate registration and dashboards for Donors, Volunteers, NGOs, and Administrators.
-- **Donation Management:** Donors can easily create, track, and manage their food donations.
-- **Volunteer Coordination:** Volunteers can browse available donations, accept pickup tasks, and update delivery status.
-- **NGO Claiming System:** NGOs can view and claim available donations to distribute to their communities.
-- **Admin Dashboard:** Administrators have access to system-wide analytics, user management, and overall activity monitoring.
-- **Interactive Live Map:** A real-time map view shows the location of available food donations, helping volunteers and NGOs to respond quickly.
-- **Notification System:** Users receive timely notifications about donation status, pickup assignments, and claims.
-
-## 📸 Screenshots
-
-*(Add screenshots of your application here. For example: Home Page, Donor Dashboard, Volunteer View, Admin Analytics)*
-
----
+-   **User Roles:** Donor, Volunteer, NGO, and Admin roles with different permissions.
+-   **Donations:** Donors can create and manage food donations.
+-   **Pickups:** Volunteers can view available donations and schedule pickups.
+-   **Live Map:** Real-time map to visualize donation locations.
+-   **Admin Dashboard:** Admins can manage users, donations, and view analytics.
+-   **Notifications:** Users receive notifications about donation status and pickups.
 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Framework:** Node.js, Express.js
-- **Database:** MongoDB with Mongoose
-- **Authentication:** JSON Web Tokens (JWT)
-- **Linting:** ESLint
+-   **Runtime:** [Node.js](https://nodejs.org/)
+-   **Framework:** [Express.js](https://expressjs.com/)
+-   **Database:** [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/)
+-   **Authentication:** JSON Web Tokens (JWT)
 
 ### Frontend
-- **Templating:** HTML
-- **Styling:** Tailwind CSS
-- **Client-side JS:** Vanilla JavaScript (Fetch API)
+-   **Framework:** Vanilla JavaScript, HTML5, CSS3
+-   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+-   **Mapping:** [Mapbox](https://www.mapbox.com/) or a similar mapping library
 
-### DevOps
-- **CI/CD:** GitHub Actions
+## 📂 Project Structure
 
----
+```
+food-management-system/
+├── backend/
+│   ├── controllers/      # Request handlers
+│   ├── middleware/       # Express middleware
+│   ├── models/           # Mongoose schemas
+│   ├── routes/           # API routes
+│   ├── config/           # DB, env, logger configuration
+│   └── server.js         # Main server entry point
+└── frontend/
+    ├── js/               # JavaScript files for each page
+    ├── css/              # CSS files
+    ├── images/           # Image assets
+    └── *.html            # HTML files for each page
+```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/en/) (v14 or later)
-- [MongoDB](https://www.mongodb.com/try/download/community) (local instance or a cloud-hosted solution like MongoDB Atlas)
-- `npm` (comes with Node.js)
+-   [Node.js](https://nodejs.org/en/download/) (v14 or higher)
+-   [npm](https://www.npmjs.com/get-npm)
+-   [MongoDB](https://www.mongodb.com/try/download/community) installed and running, or a MongoDB Atlas cluster.
 
-### Installation & Setup
+### 1. Clone the Repository
 
-1.  **Clone the repository:**
+```bash
+git clone https://github.com/Shivakumar-stack/food-management-system.git
+cd food-management-system
+```
+
+### 2. Backend Setup
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in the `backend` directory. You can use `.env.example` as a template:
+
+```
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+### 3. Frontend Setup
+
+```bash
+cd ../frontend
+npm install
+```
+
+### 4. Running the Application
+
+1.  **Start the Backend Server:**
     ```bash
-    git clone https://github.com/Shivakumar-stack/food-management-system.git
-    cd food-management-system
-    ```
-
-2.  **Setup Backend:**
-    ```bash
-    cd backend
-    npm install
-    ```
-    - Create a `.env` file in the `backend` directory by copying the example:
-      ```bash
-      cp .env.example .env
-      ```
-    - Update the `.env` file with your configuration:
-      ```
-      NODE_ENV=development
-      PORT=5000
-      MONGO_URI=<YOUR_MONGODB_CONNECTION_STRING>
-      JWT_SECRET=<YOUR_JWT_SECRET>
-      JWT_EXPIRES_IN=30d
-      ```
-
-3.  **Setup Frontend:**
-    *(The frontend seems to be static HTML/CSS/JS, so no build step is explicitly required based on the project structure. If you have a build process, add the steps here.)*
-
----
-
-##  Usage
-
-1.  **Start the backend server:**
-    ```bash
-    cd backend
+    cd ../backend
     npm start
     ```
-    The server will be running at `http://localhost:5000`.
+    The server will be running on `http://localhost:5000`.
 
-2.  **Open the frontend:**
-    - Open the `index.html` file from the `frontend` directory in your web browser.
-    - The application should now be running and connected to your local backend.
+2.  **Start the Frontend:**
+    Open the `.html` files in the `frontend` directory in your browser. For a better experience with live reloading during development, you can use a simple live server.
 
----
-
-## 📁 Folder Structure
-
-```
-food-management-system/
-├── .github/              # GitHub Actions CI workflow
-├── backend/
-│   ├── controllers/      # Application logic (request handlers)
-│   ├── models/           # Mongoose data models
-│   ├── routes/           # Express API routes
-│   ├── middleware/       # Custom middleware (auth, error handling)
-│   ├── config/           # DB connection, environment variables
-│   ├── .env.example      # Example environment variables
-│   └── server.js         # Backend entry point
-└── frontend/
-    ├── css/              # Tailwind CSS and custom styles
-    ├── js/               # Frontend JavaScript files
-    └── *.html            # HTML pages
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! If you'd like to contribute, please follow these steps:
-
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/your-feature-name`).
-3.  Make your changes.
-4.  Commit your changes (`git commit -m 'Add some feature'`).
-5.  Push to the branch (`git push origin feature/your-feature-name`).
-6.  Open a Pull Request.
-
----
+    ```bash
+    # If you have live-server installed globally
+    cd ../frontend
+    live-server
+    ```
 
 ## 📜 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
