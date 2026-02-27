@@ -25,10 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  console.log('Dashboard loaded. Auth state:', authService.isLoggedIn());
-  
   if (!authService.isLoggedIn()) {
-    console.log('User not logged in, redirecting to login');
     window.location.href = "login.html";
     return;
   }
@@ -184,7 +181,6 @@ async function pollNotifications() {
 
     if (latestId && dashboardState.latestNotificationId !== latestId) {
       dashboardState.latestNotificationId = latestId;
-      console.log("New notification:", latest.title || "New activity");
     }
   } catch (error) {
     // Silent on polling failures to avoid noisy console spam on intermittent network issues.

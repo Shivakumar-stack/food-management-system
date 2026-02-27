@@ -23,8 +23,7 @@ exports.submitContactForm = async (req, res) => {
       subject,
       message,
       type: type || 'general',
-      status: 'open',
-      submittedAt: new Date()
+      status: 'new'
     });
 
     await contact.save();
@@ -78,8 +77,7 @@ exports.subscribeToNewsletter = async (req, res) => {
       subject: 'Newsletter Subscription',
       message: 'User subscribed to newsletter',
       type: 'newsletter',
-      status: 'subscribed',
-      submittedAt: new Date()
+      status: 'subscribed'
     });
 
     await contact.save();
@@ -112,7 +110,7 @@ exports.getAllContactSubmissions = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const contacts = await Contact.find(filter)
-      .sort({ submittedAt: -1 })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
 
@@ -189,8 +187,11 @@ exports.respondToContactSubmission = async (req, res) => {
       id,
       {
         $set: {
-          response: message,
-          respondedAt: new Date(),
+          response: {
+            message,
+            respondedBy: req.user?.id || null,
+            respondedAt: new Date()
+          },
           status: 'responded'
         }
       },
@@ -239,8 +240,9 @@ exports.resolveComplaint = async (req, res) => {
       id,
       {
         $set: {
-          resolution,
-          resolvedAt: new Date(),
+          'complaintDetails.resolution': resolution,
+          'complaintDetails.resolvedAt': new Date(),
+          'complaintDetails.resolvedBy': req.user?.id || null,
           status: 'resolved'
         }
       },

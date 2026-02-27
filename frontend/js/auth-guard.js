@@ -213,8 +213,8 @@ const AuthGuard = {
       const userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User';
 
       navActions.innerHTML = `
-        <a href="dashboard.html" class="hidden sm:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-orange-600 font-medium transition-colors">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-coral-500 flex items-center justify-center text-white text-sm font-bold">
+        <a href="dashboard.html" class="hidden sm:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-emerald-600 font-medium transition-colors">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-sm font-bold">
             ${userInitials}
           </div>
           <span class="hidden lg:inline">${userName}</span>
@@ -227,7 +227,7 @@ const AuthGuard = {
 
       if (mobileAuth) {
         mobileAuth.innerHTML = `
-          <a href="dashboard.html" class="block w-full px-4 py-3 text-center bg-orange-50 text-orange-600 font-semibold rounded-xl">
+          <a href="dashboard.html" class="block w-full px-4 py-3 text-center bg-emerald-50 text-emerald-700 font-semibold rounded-xl">
             <i class="fas fa-user mr-2"></i>My Dashboard
           </a>
           <button onclick="authService.logout()" class="block w-full px-4 py-3 text-center border-2 border-red-200 text-red-600 font-semibold rounded-xl hover:bg-red-50 transition-colors">
@@ -237,14 +237,14 @@ const AuthGuard = {
       }
     } else {
       navActions.innerHTML = `
-        <a href="login.html" class="px-4 py-2 text-sm text-gray-700 hover:text-orange-600 font-medium transition-colors">Log In</a>
-        <a href="signup.html" class="px-4 py-2 text-sm bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all">Get Started</a>
+        <a href="login.html" class="px-4 py-2 text-sm text-gray-700 hover:text-emerald-600 font-medium transition-colors">Log In</a>
+        <a href="signup.html" class="px-4 py-2 text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all">Get Started</a>
       `;
 
       if (mobileAuth) {
         mobileAuth.innerHTML = `
-          <a href="login.html" class="block w-full px-4 py-3 text-center border-2 border-orange-200 text-orange-600 font-semibold rounded-xl hover:bg-orange-50 transition-colors">Log In</a>
-          <a href="signup.html" class="block w-full px-4 py-3 text-center bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl">Get Started</a>
+          <a href="login.html" class="block w-full px-4 py-3 text-center border-2 border-emerald-200 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-50 transition-colors">Log In</a>
+          <a href="signup.html" class="block w-full px-4 py-3 text-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl">Get Started</a>
         `;
       }
     }

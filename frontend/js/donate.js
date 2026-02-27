@@ -73,11 +73,11 @@
       </button>
       <div class="grid gap-3 pr-10">
         <div>
-          <input type="text" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-orange-400 focus:outline-none transition-colors text-sm" placeholder="Item name (e.g., Rice, Bread)" required value="${escapeAttribute(item.name || "")}">
+          <input type="text" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-emerald-400 focus:outline-none transition-colors text-sm" placeholder="Item name (e.g., Rice, Bread)" required value="${escapeAttribute(item.name || "")}">
         </div>
         <div class="grid grid-cols-2 gap-3">
-          <select class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-orange-400 focus:outline-none transition-colors text-sm" required>${buildCategoryOptions(item.category || "")}</select>
-          <input type="text" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-orange-400 focus:outline-none transition-colors text-sm" placeholder="Quantity (e.g., 5 kg)" required value="${escapeAttribute(item.quantity || "")}">
+          <select class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-emerald-400 focus:outline-none transition-colors text-sm" required>${buildCategoryOptions(item.category || "")}</select>
+          <input type="text" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-emerald-400 focus:outline-none transition-colors text-sm" placeholder="Quantity (e.g., 5 kg)" required value="${escapeAttribute(item.quantity || "")}">
         </div>
       </div>
     `;
@@ -152,6 +152,9 @@
     const servings = calculateEstimatedServings(items);
     elements.impactItemsPreview.textContent = String(items.length);
     elements.impactMealsPreview.textContent = String(servings);
+    if(elements.impactMeals) {
+      elements.impactMeals.textContent = (1200000 + servings).toLocaleString() + '+';
+    }
     if (!items.length) {
       elements.impactPolicyHint.textContent = "Add food items to preview impact and improve volunteer matching.";
       return;
@@ -182,9 +185,9 @@
 
   function setTabState(tabButton, isActive) {
     if (!tabButton) return;
-    tabButton.classList.toggle("bg-orange-50", isActive);
-    tabButton.classList.toggle("text-orange-700", isActive);
-    tabButton.classList.toggle("border-orange-200", isActive);
+    tabButton.classList.toggle("bg-emerald-50", isActive);
+    tabButton.classList.toggle("text-emerald-700", isActive);
+    tabButton.classList.toggle("border-emerald-200", isActive);
     tabButton.classList.toggle("bg-gray-50", !isActive);
     tabButton.classList.toggle("text-gray-500", !isActive);
     tabButton.classList.toggle("border-gray-200", !isActive);
@@ -261,11 +264,11 @@
   function highlightPickupSlot(activeButton = null) {
     elements.pickupSlotButtons.forEach((button) => {
       const isActive = button === activeButton;
-      button.classList.toggle("bg-orange-500", isActive);
+      button.classList.toggle("bg-emerald-600", isActive);
       button.classList.toggle("text-white", isActive);
-      button.classList.toggle("border-orange-500", isActive);
-      button.classList.toggle("text-orange-700", !isActive);
-      button.classList.toggle("border-orange-200", !isActive);
+      button.classList.toggle("border-emerald-600", isActive);
+      button.classList.toggle("text-emerald-700", !isActive);
+      button.classList.toggle("border-emerald-200", !isActive);
     });
   }
 
@@ -738,6 +741,36 @@
         elements.successModal.classList.add("hidden");
       }
     });
+
+    // Impact Calculator
+    const updateImpactCalculator = (amount) => {
+      const meals = Math.floor(amount / 2.5);
+      if (elements.impactCalculatorAmount) {
+        elements.impactCalculatorAmount.textContent = amount;
+      }
+      if (elements.impactCalculatorMeals) {
+        elements.impactCalculatorMeals.textContent = meals;
+      }
+      if (elements.impactCalculatorSlider) {
+        elements.impactCalculatorSlider.value = amount;
+      }
+      elements.impactPresetBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.amount === String(amount));
+      });
+    };
+
+    if (elements.impactCalculatorSlider) {
+      elements.impactCalculatorSlider.addEventListener("input", (e) => {
+        updateImpactCalculator(e.target.value);
+      });
+    }
+
+    elements.impactPresetBtns.forEach(button => {
+      button.addEventListener("click", (e) => {
+        const amount = e.target.dataset.amount;
+        updateImpactCalculator(amount);
+      });
+    });
   }
 
   function cacheElements() {
@@ -761,6 +794,13 @@
     elements.impactMealsPreview = document.getElementById("impactMealsPreview");
     elements.impactItemsPreview = document.getElementById("impactItemsPreview");
     elements.impactPolicyHint = document.getElementById("impactPolicyHint");
+    elements.impactMeals = document.getElementById("impactMeals");
+
+    // Impact Calculator
+    elements.impactCalculatorSlider = document.getElementById("impact-calculator-slider");
+    elements.impactCalculatorAmount = document.getElementById("impact-calculator-amount");
+    elements.impactCalculatorMeals = document.getElementById("impact-calculator-meals");
+    elements.impactPresetBtns = document.querySelectorAll(".impact-preset-btn");
 
     elements.authOverlay = document.getElementById("authOverlay");
     elements.restrictionDialog = document.getElementById("donationRestrictionDialog");

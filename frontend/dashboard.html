@@ -250,15 +250,26 @@
         </div>
       </main>
     </div>
-  <div id="footer-placeholder"></div>
+  </div>
 
-  <script>
-    fetch('unified-footer.html')
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('footer-placeholder').innerHTML = data;
-      });
-  </script>
+  <div id="pendingModal" class="pending-modal-overlay hidden" aria-hidden="true">
+    <div class="pending-modal-card" role="dialog" aria-modal="true" aria-labelledby="pendingModalTitle">
+      <div class="pending-modal-header">
+        <div>
+          <h2 id="pendingModalTitle">Pending Requests (<span id="pendingCountModal">0</span>)</h2>
+          <p class="pending-modal-subtitle">Review your pending queue and latest request details.</p>
+        </div>
+        <button type="button" id="closePendingModal" class="pending-modal-close" aria-label="Close pending requests modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="pending-modal-list-wrap">
+        <ul class="pending-list panel-list-scroll" id="pendingListModal"></ul>
+      </div>
+    </div>
+  </div>
+
   <script src="./js/config.js?v=20260214a" defer></script>
   <script src="./js/app.js?v=20260214c" defer></script>
   <script src="./js/auth-guard.js?v=20260214a" defer></script>

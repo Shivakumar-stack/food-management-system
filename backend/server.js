@@ -11,7 +11,7 @@ require('dotenv').config();
 
 const { env } = require('./config/env');
 const logger = require('./config/logger');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 
 const authRoutes = require('./routes/authRoutes');
 const donationRoutes = require('./routes/donationRoutes');
@@ -22,9 +22,10 @@ const Donation = require('./models/Donation');
 
 const app = express();
 const server = http.createServer(app);
+let isShuttingDown = false;
 
 const productionOrigin = env.CLIENT_URL;
-const developmentOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000'];
+const developmentOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000', 'http://127.0.0.1:3000'];
 const allowedOrigins = env.NODE_ENV === 'production'
   ? [productionOrigin]
   : [...developmentOrigins, productionOrigin];
@@ -74,12 +75,13 @@ async function runAutoExpireJob() {
   }
 }
 
-setInterval(runAutoExpireJob, AUTO_EXPIRE_INTERVAL_MS);
-setTimeout(runAutoExpireJob, 15 * 1000);
+const autoExpireInterval = setInterval(runAutoExpireJob, AUTO_EXPIRE_INTERVAL_MS);
+const autoExpireWarmupTimeout = setTimeout(runAutoExpireJob, 15 * 1000);
 
 const corsOptions = {
   origin: (origin, callback) => {
-    const isAllowed = env.NODE_ENV !== 'production' || (origin && allowedOrigins.includes(origin));
+    // Allow same-origin/non-browser requests (no Origin header) and known front-end origins.
+    const isAllowed = !origin || allowedOrigins.includes(origin);
     if (isAllowed) {
       callback(null, true);
     } else {
@@ -139,7 +141,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/pickups', pickupRoutes);
 
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 
 app.get('/api/health', async (req, res) => {
   const mongoose = require('mongoose');
@@ -173,7 +175,15 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 const gracefulShutdown = async (signal) => {
+  if (isShuttingDown) {
+    logger.warn(`Shutdown already in progress. Ignoring ${signal}.`);
+    return;
+  }
+  isShuttingDown = true;
+
   logger.info(`\n${signal} received. Shutting down gracefully...`);
+  clearInterval(autoExpireInterval);
+  clearTimeout(autoExpireWarmupTimeout);
 
   server.close(async () => {
     logger.info('HTTP server closed');
@@ -208,10 +218,20 @@ process.on('uncaughtException', (error) => {
 });
 
 const PORT = env.PORT;
+const RESOLVED_PORT = Number(process.env.PORT) || PORT || 5000;
 
-server.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT} in ${env.NODE_ENV} mode`);
-  logger.info(`Health check available at http://localhost:${PORT}/api/health`);
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    logger.error(`Port ${RESOLVED_PORT} is already in use.`);
+    process.exit(1);
+  }
+  logger.error('Server startup error:', err);
+  process.exit(1);
+});
+
+server.listen(RESOLVED_PORT, () => {
+  logger.info(`Server running on port ${RESOLVED_PORT} in ${env.NODE_ENV} mode`);
+  logger.info(`Health check available at http://localhost:${RESOLVED_PORT}/api/health`);
 });
 
 module.exports = { app, server };

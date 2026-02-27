@@ -7,7 +7,7 @@ const contactSchema = new mongoose.Schema({
   // Contact type
   type: {
     type: String,
-    enum: ['general', 'complaint', 'feedback', 'partnership', 'volunteer_inquiry', 'donation_inquiry'],
+    enum: ['general', 'complaint', 'feedback', 'partnership', 'volunteer_inquiry', 'donation_inquiry', 'newsletter'],
     default: 'general',
     required: true
   },
@@ -24,7 +24,7 @@ const contactSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
     match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
       'Please enter a valid email'
     ]
   },
@@ -77,7 +77,7 @@ const contactSchema = new mongoose.Schema({
   // Status tracking
   status: {
     type: String,
-    enum: ['new', 'in_review', 'responded', 'resolved', 'closed', 'spam'],
+    enum: ['new', 'in_review', 'responded', 'resolved', 'closed', 'spam', 'subscribed'],
     default: 'new'
   },
   // Response from admin

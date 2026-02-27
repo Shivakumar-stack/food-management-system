@@ -3,7 +3,7 @@
  */
 const mongoose = require('mongoose');
 const User = require('./models/User');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 
 require('dotenv').config();
 

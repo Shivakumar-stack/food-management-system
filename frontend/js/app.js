@@ -17,81 +17,78 @@ const AUTH_STORAGE_KEYS = {
 
 const apiService = {
   resolveErrorMessage(data, statusCode) {
-    if (Array.isArray(data?.errors) && data.errors.length > 0) {
-      const firstError = data.errors[0];
-      return firstError?.msg || firstError?.message || data.message || `Request failed with status ${statusCode}`;
+    if (data?.message) {
+      return data.message;
     }
-
-    return data?.message || `Request failed with status ${statusCode}`;
+    if (Array.isArray(data?.errors) && data.errors.length > 0) {
+      return data.errors.map(err => err.msg).join(', ');
+    }
+    switch (statusCode) {
+      case 400: return 'Bad request. Please check your input.';
+      case 401: return 'Unauthorized. Please log in again.';
+      case 403: return 'You do not have permission to perform this action.';
+      case 404: return 'The requested resource was not found.';
+      case 500: return 'A server error occurred. Please try again later.';
+      default: return `Request failed with status ${statusCode}`;
+    }
   },
 
   /**
    * Make API request with authentication
    */
   async request(endpoint, options = {}) {
-    // Check if appConfig is available
     if (!window.appConfig || !window.appConfig.API_BASE_URL) {
       console.error('[API] ERROR: appConfig.API_BASE_URL is not defined!');
       throw new Error('API configuration not available. Please refresh the page.');
     }
     
     const url = `${window.appConfig.API_BASE_URL}${endpoint}`;
-    console.log(`[API] ${options.method || 'GET'} ${url}`);
     
-    // Get token from auth service storage
     const token = typeof authService !== 'undefined' ? authService.getToken() : null;
     
-    // Default headers
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers
     };
     
-    // Add auth token if available
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
     try {
-      console.log('[API] Sending request with headers:', headers);
-      const response = await fetch(url, {
-        ...options,
-        headers
-      });
-
-      console.log(`[API] Response status: ${response.status}`);
+      const response = await fetch(url, { ...options, headers });
       
       let data = {};
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
-        data = await response.json();
-        console.log('[API] Response data:', data);
+        try {
+          data = await response.json();
+        } catch (e) {
+          // Handle cases where JSON parsing fails on an error response
+          throw new Error(`Server returned a malformed response with status ${response.status}`);
+        }
       }
-      
+
       if (!response.ok) {
-        // Handle specific error cases
-        if (response.status === 401) {
-          // Token expired or invalid
-          console.log('[API] 401 Unauthorized - Token invalid or expired');
-          if (typeof authService !== 'undefined') {
-            authService.logout(null);
-          }
-          window.location.href = 'login.html?error=session_expired';
-          throw new Error('Session expired. Please log in again.');
+        if (response.status === 401 && typeof authService !== 'undefined') {
+          authService.logout('login.html?error=session_expired');
+          return; // Stop further execution
         }
         
-        const requestError = new Error(this.resolveErrorMessage(data, response.status));
-        requestError.status = response.status;
-        requestError.code = data?.code || null;
-        requestError.details = data?.data || null;
-        requestError.raw = data || null;
-        throw requestError;
+        const errorMessage = this.resolveErrorMessage(data, response.status);
+        const error = new Error(errorMessage);
+        error.status = response.status;
+        error.details = data.errors || [];
+        throw error;
       }
       
       return data;
     } catch (error) {
-      console.error('[API] Request error:', error);
-      throw error;
+      // Handle network errors or other fetch-related issues
+      if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+          throw new Error('Network error. Please check your internet connection.');
+      }
+      throw error; // Re-throw other errors
     }
   },
   
@@ -119,6 +116,20 @@ const apiService = {
   // DELETE request
   delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
+  },
+
+  // Health check
+  async healthCheck() {
+    try {
+      const response = await fetch(`${window.appConfig.API_BASE_URL}/health`);
+      if (!response.ok) {
+        throw new Error(`Health check failed with status ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Health check failed:', error);
+      throw error;
+    }
   }
 };
 
@@ -206,33 +217,45 @@ const authService = {
   },
 
   async register(userData) {
-    const data = await apiService.post('/auth/register', userData);
-    if (data.success) {
-      this.setSession(data.data.token, data.data.user);
-      // Small delay to ensure session is stored before redirect
-      setTimeout(() => {
-        this.redirectByRole();
-      }, 100);
+    try {
+      const data = await apiService.post('/auth/register', userData);
+      if (data.success) {
+        this.setSession(data.data.token, data.data.user);
+      }
+      return data;
+    } catch (error) {
+      console.error('[Auth] Registration error:', error);
+      throw error;
     }
-    return data;
   },
 
   async login(email, password) {
-    console.log('[Auth] Attempting login for:', email);
     try {
       const data = await apiService.post('/auth/login', { email, password });
-      console.log('[Auth] Login response:', data);
-      
       if (data.success) {
-        console.log('[Auth] Login successful, setting session');
         this.setSession(data.data.token, data.data.user);
         return data;
-      } else {
-        console.error('[Auth] Login failed:', data.message);
-        throw new Error(data.message || 'Login failed');
       }
+      // This part might not be reached if apiService throws an error, but it's good for defense
+      throw new Error(data.message || 'Login failed due to an unknown error');
     } catch (error) {
       console.error('[Auth] Login error:', error);
+      // The error is already descriptive from apiService, so we just re-throw it
+      throw error;
+    }
+  },
+
+  async socialAuth(provider, options = {}) {
+    try {
+      const payload = { provider, ...options };
+      const data = await apiService.post('/auth/social', payload);
+      if (data.success) {
+        this.setSession(data.data.token, data.data.user);
+        return data;
+      }
+      throw new Error(data.message || 'Social authentication failed');
+    } catch (error) {
+      console.error('[Auth] Social auth error:', error);
       throw error;
     }
   },
@@ -667,8 +690,8 @@ const navigation = {
       
       if (navActions) {
         navActions.innerHTML = `
-          <a href="dashboard.html" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-orange-600 font-medium transition-colors">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-coral-500 flex items-center justify-center text-white text-sm font-bold">
+          <a href="dashboard.html" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-emerald-600 font-medium transition-colors">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-sm font-bold">
               ${user?.initials || 'U'}
             </div>
             <span class="hidden xl:inline">${userName}</span>
@@ -681,7 +704,7 @@ const navigation = {
       
       if (mobileAuth) {
         mobileAuth.innerHTML = `
-          <a href="dashboard.html" class="block w-full px-4 py-3 text-center bg-orange-50 text-orange-600 font-semibold rounded-xl">
+          <a href="dashboard.html" class="block w-full px-4 py-3 text-center bg-emerald-50 text-emerald-700 font-semibold rounded-xl">
             Dashboard
           </a>
           <button onclick="authService.logout()" class="block w-full px-4 py-3 text-center border-2 border-red-200 text-red-600 font-semibold rounded-xl hover:bg-red-50 transition-colors">
@@ -724,7 +747,7 @@ const navigation = {
 
 
 const layout = {
-  footerVersion: '20260220',
+  footerVersion: '20260224e',
   getCurrentFileName() {
     const path = String(window.location.pathname || '');
     const fileName = path.split('/').filter(Boolean).pop();
@@ -748,85 +771,105 @@ const layout = {
   getFooterMarkup() {
     const year = new Date().getFullYear();
     return `
-<footer class="bg-slate-900 text-white pt-20 pb-12">
-  <div class="container mx-auto grid grid-cols-12 gap-y-12 gap-x-8 px-4">
-      <!-- Logo and About -->
-      <div class="lg:col-span-4 md:col-span-12 col-span-12">
-        <a href="index.html" class="flex items-center gap-2 mb-6">
-          <img src="images/logo.svg" alt="FoodBridge Logo" class="w-10 h-10">
-          <span class="text-2xl font-bold text-white">FoodBridge</span>
+<footer class="site-footer" data-footer-version="${this.footerVersion}">
+  <div class="footer-container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo" aria-label="FoodBridge Home">
+          <span class="footer-logo-icon"><i class="fas fa-hand-holding-heart"></i></span>
+          <span>FoodBridge</span>
         </a>
-        <p class="text-slate-400 leading-relaxed">
-          Connecting surplus food with communities in need. We use technology to reduce waste, fight hunger, and build sustainable local food systems.
+        <p class="footer-tagline">
+          Connecting food donors with communities in need through reliable pickup workflows and transparent impact tracking.
         </p>
-        <div class="flex gap-4 pt-6">
-          <a href="#" class="w-8 h-8 bg-slate-800 hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" class="w-8 h-8 bg-slate-800 hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors"><i class="fab fa-twitter"></i></a>
-          <a href="#" class="w-8 h-8 bg-slate-800 hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors"><i class="fab fa-instagram"></i></a>
-          <a href="#" class="w-8 h-8 bg-slate-800 hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors"><i class="fab fa-linkedin-in"></i></a>
+        <p class="footer-trust-pill">
+          <i class="fas fa-circle-check"></i>
+          <span>Trusted by verified donors and NGOs</span>
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <h3>Quick Links</h3>
+        <ul class="footer-link-list">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="how-it-works.html">How It Works</a></li>
+          <li><a href="donate.html">Donate Food</a></li>
+          <li><a href="volunteer.html">Volunteer</a></li>
+          <li><a href="live-map.html">Live Map</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h3>Resources</h3>
+        <ul class="footer-link-list">
+          <li><a href="how-it-works.html">Food Safety Guide</a></li>
+          <li><a href="about.html">Tax Benefits</a></li>
+          <li><a href="ngo-claims.html">Partner NGOs</a></li>
+          <li><a href="index.html#testimonials">Success Stories</a></li>
+          <li><a href="contact.html">FAQs</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h3>Contact &amp; Social</h3>
+        <ul>
+          <li><i class="fas fa-envelope"></i><a href="mailto:hello@foodbridge.org">hello@foodbridge.org</a></li>
+          <li><i class="fas fa-phone"></i><a href="tel:+18003663274">1-800-FOOD-BRIDGE</a></li>
+          <li><i class="fas fa-location-dot"></i><span>123 Bridge Street, Mumbai, India</span></li>
+        </ul>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
         </div>
-      </div>
-
-      <!-- Links Columns -->
-      <div class="lg:col-span-2 md:col-span-4 col-span-6">
-        <h4 class="text-white font-semibold mb-6">Platform</h4>
-        <ul class="space-y-4">
-          <li><a href="donate.html" class="text-slate-400 hover:text-emerald-400 transition-colors">Donate Food</a></li>
-          <li><a href="volunteer.html" class="text-slate-400 hover:text-emerald-400 transition-colors">Volunteer</a></li>
-          <li><a href="live-map.html" class="text-slate-400 hover:text-emerald-400 transition-colors">Live Map</a></li>
-          <li><a href="how-it-works.html" class="text-slate-400 hover:text-emerald-400 transition-colors">How It Works</a></li>
-        </ul>
-      </div>
-
-      <div class="lg:col-span-2 md:col-span-4 col-span-6">
-        <h4 class="text-white font-semibold mb-6">Company</h4>
-        <ul class="space-y-4">
-          <li><a href="about.html" class="text-slate-400 hover:text-emerald-400 transition-colors">About Us</a></li>
-          <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">Careers</a></li>
-          <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">Press</a></li>
-          <li><a href="contact.html" class="text-slate-400 hover:text-emerald-400 transition-colors">Contact</a></li>
-        </ul>
-      </div>
-
-      <div class="lg:col-span-2 md:col-span-4 col-span-12">
-        <h4 class="text-white font-semibold mb-6">Resources</h4>
-        <ul class="space-y-4">
-          <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">Blog</a></li>
-          <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">Help Center</a></li>
-          <li><a href="privacy-policy.html" class="text-slate-400 hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
-          <li><a href="terms.html" class="text-slate-400 hover:text-emerald-400 transition-colors">Terms of Service</a></li>
-        </ul>
-      </div>
-    </div>
-    
-    <!-- Newsletter Section -->
-    <div class="pb-12 border-b border-slate-800">
-      <div class="bg-slate-800/50 rounded-2xl p-8 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent pointer-events-none"></div>
-        <div class="relative z-10 max-w-xl">
-          <h3 class="text-2xl font-bold text-white mb-2">Stay Updated</h3>
-          <p class="text-slate-400">Subscribe to our newsletter to get the latest news and updates.</p>
-        </div>
-        <form class="relative z-10 w-full max-w-md">
-          <input type="email" placeholder="Enter your email" class="w-full h-14 bg-slate-900/80 border border-slate-700 rounded-xl px-6 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50" />
-          <button class="absolute right-2 top-2 h-10 px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors">
-            Subscribe
-          </button>
-        </form>
       </div>
     </div>
 
-    <!-- Copyright -->
-    <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-      <p class="text-slate-500 text-sm">&copy; ${year} FoodBridge. All rights reserved.</p>
-      <a href="sitemap.html" class="text-slate-500 hover:text-emerald-400 text-sm transition-colors">Sitemap</a>
+    <div class="footer-bottom">
+      <p>&copy; ${year} FoodBridge. All rights reserved.</p>
+      <div class="footer-bottom-links footer-legal-links">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms.html">Terms</a>
+        <a href="sitemap.html">Sitemap</a>
+      </div>
     </div>
   </div>
 </footer>
     `;
   },
 
+  shouldRenderFooter() {
+    const body = document.body;
+    const fileName = this.getCurrentFileName();
+    const blockedFiles = new Set(['login.html', 'signup.html']);
+
+    if (blockedFiles.has(fileName)) {
+      return false;
+    }
+
+    if (!body) {
+      return true;
+    }
+
+    return !(
+      body.classList.contains('no-footer') ||
+      body.classList.contains('auth-page') ||
+      body.classList.contains('dashboard-page') ||
+      body.classList.contains('donor-portal-page') ||
+      body.dataset.footer === 'off'
+    );
+  },
+
   mountGlobalFooter() {
+    if (!this.shouldRenderFooter()) {
+      const managedFooter = document.querySelector('footer.site-footer, footer[data-footer-version]');
+      if (managedFooter) {
+        managedFooter.remove();
+      }
+      return;
+    }
+
     const existingFooter = document.querySelector('footer');
     if (existingFooter?.dataset?.footerVersion === this.footerVersion) {
       return;
@@ -856,8 +899,8 @@ const layout = {
       }
 
       if (link.closest('#mobileMenu')) {
-        link.classList.toggle('bg-orange-50', isActive);
-        link.classList.toggle('text-orange-600', isActive);
+        link.classList.toggle('bg-emerald-50', isActive);
+        link.classList.toggle('text-emerald-700', isActive);
       }
 
       if (link.closest('.footer-link-list') || link.closest('.footer-legal-links')) {
@@ -949,8 +992,8 @@ const testimonialSlider = {
     });
     
     this.dots.forEach((dot, index) => {
-      dot.classList.toggle('bg-orange-500', index === this.currentSlide);
-      dot.classList.toggle('bg-orange-200', index !== this.currentSlide);
+      dot.classList.toggle('bg-emerald-600', index === this.currentSlide);
+      dot.classList.toggle('bg-emerald-200', index !== this.currentSlide);
     });
   },
   

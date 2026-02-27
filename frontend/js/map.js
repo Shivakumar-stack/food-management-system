@@ -236,9 +236,9 @@ const MapModule = {
   
   getMarkerIcon(type) {
     const icons = {
-      donor: { color: '#f97316', icon: 'fa-hand-holding-heart', label: 'Donor' },
-      ngo: { color: '#f59e0b', icon: 'fa-building', label: 'NGO' },
-      volunteer: { color: '#ff6b4a', icon: 'fa-truck', label: 'Volunteer' },
+      donor: { color: '#059669', icon: 'fa-hand-holding-heart', label: 'Donor' },
+      ngo: { color: '#0f766e', icon: 'fa-building', label: 'NGO' },
+      volunteer: { color: '#2563eb', icon: 'fa-truck', label: 'Volunteer' },
       delivered: { color: '#10b981', icon: 'fa-check', label: 'Delivered' }
     };
     return icons[type] || icons.donor;
@@ -261,7 +261,7 @@ const MapModule = {
         </div>
         <h4 class="font-bold text-gray-900 mb-1">${title}</h4>
         <p class="text-sm text-gray-600 mb-2">${description}</p>
-        ${meals > 0 ? `<p class="text-sm font-medium text-orange-600 mb-2"><i class="fas fa-utensils"></i> ${meals} meals available</p>` : ''}
+        ${meals > 0 ? `<p class="text-sm font-medium text-emerald-600 mb-2"><i class="fas fa-utensils"></i> ${meals} meals available</p>` : ''}
         <div class="pt-2 border-t border-gray-100">
           <p class="text-xs text-gray-500"><i class="fas fa-map-marker-alt"></i> ${name}</p>
           ${contact ? `<p class="text-xs text-gray-500 mt-1"><i class="fas fa-phone"></i> ${contact}</p>` : ''}

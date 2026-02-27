@@ -27,13 +27,20 @@ const registerUser = async (userData) => {
     throw error;
   }
 
-  // Ensure address has a safe geo structure
-  const safeAddress = (address && Object.keys(address).length)
-    ? address
-    : {
-        country: process.env.GEOCODE_DEFAULT_COUNTRY || 'India',
-        location: { type: 'Point', coordinates: [0, 0] },
-      };
+  // Ensure address has a valid GeoJSON point for the 2dsphere index.
+  const hasValidCoordinates =
+    Array.isArray(address?.location?.coordinates) &&
+    address.location.coordinates.length === 2 &&
+    address.location.coordinates.every((value) => Number.isFinite(value));
+
+  const safeAddress = {
+    ...(address || {}),
+    country: address?.country || process.env.GEOCODE_DEFAULT_COUNTRY || 'India',
+    location: {
+      type: 'Point',
+      coordinates: hasValidCoordinates ? address.location.coordinates : [0, 0],
+    },
+  };
 
   const user = await User.create({
     firstName,

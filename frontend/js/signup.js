@@ -31,6 +31,40 @@ const signupForm = document.getElementById('signupForm');
       formValidation.clearAllErrors(signupForm);
     }
 
+    function syncRoleCardSelection() {
+      const roleCards = document.querySelectorAll('.role-card');
+      roleCards.forEach((card) => {
+        const input = card.querySelector('input[type="radio"]');
+        const checkIcon = card.querySelector('.check-icon');
+        const isSelected = Boolean(input?.checked);
+
+        card.classList.toggle('selected', isSelected);
+        if (checkIcon) {
+          checkIcon.classList.toggle('opacity-0', !isSelected);
+        }
+      });
+    }
+
+    function initRoleCardSelection() {
+      const roleCards = document.querySelectorAll('.role-card');
+      if (!roleCards.length) return;
+
+      roleCards.forEach((card) => {
+        const input = card.querySelector('input[type="radio"]');
+        if (!input) return;
+
+        card.addEventListener('click', (event) => {
+          if (event.target && event.target.tagName === 'INPUT') return;
+          input.checked = true;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+        input.addEventListener('change', syncRoleCardSelection);
+      });
+
+      syncRoleCardSelection();
+    }
+
     // Clear field errors on user input
     if (signupForm) {
       signupForm.querySelectorAll('input, textarea, select').forEach((el) => {
@@ -148,20 +182,63 @@ const signupForm = document.getElementById('signupForm');
     });
 
     // Toggle Password Visibility
-    document.getElementById('togglePassword')?.addEventListener('click', function() {
-      const passwordInput = document.getElementById('password');
-      const icon = this.querySelector('i');
+    function setupPasswordToggle(toggleBtnId, passwordInputId) {
+      const toggleButton = document.getElementById(toggleBtnId);
+      const passwordInput = document.getElementById(passwordInputId);
+      if (!toggleButton || !passwordInput) return;
 
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      } else {
-        passwordInput.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-      }
-    });
+      const icon = toggleButton.querySelector('i');
+
+      toggleButton.addEventListener('click', function() {
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          icon?.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+          passwordInput.type = 'password';
+          icon?.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+      });
+    }
+
+    setupPasswordToggle('togglePassword', 'password');
+    setupPasswordToggle('toggleConfirmPassword', 'confirmPassword');
+    initRoleCardSelection();
+
+    // Password Strength Meter
+    const passwordInput = document.getElementById('password');
+    const strengthMeter = document.getElementById('password-strength-meter');
+    const strengthLevels = [
+      { color: 'bg-red-500', text: 'Very Weak' },
+      { color: 'bg-yellow-500', text: 'Weak' },
+      { color: 'bg-blue-500', text: 'Medium' },
+      { color: 'bg-green-500', text: 'Strong' }
+    ];
+
+    if (passwordInput && strengthMeter) {
+      passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        
+        let strengthIndex = 0;
+        if (password.length >= 6) {
+            strengthIndex = Math.min(Math.floor(score / 1.25), strengthLevels.length -1);
+        }
+
+        const bars = strengthMeter.children;
+        for (let i = 0; i < bars.length; i++) {
+          if (i < strengthIndex + 1) {
+            bars[i].className = `h-1.5 flex-1 rounded-full ${strengthLevels[strengthIndex].color}`;
+          } else {
+            bars[i].className = 'h-1.5 flex-1 rounded-full bg-gray-200';
+          }
+        }
+      });
+    }
 
     // Signup Form Handler
     signupForm?.addEventListener('submit', async function(e) {
@@ -242,6 +319,7 @@ const signupForm = document.getElementById('signupForm');
       const roleInput = signupForm.querySelector(`input[name="role"][value="${requestedRole}"]`);
       if (roleInput) {
         roleInput.checked = true;
+        roleInput.dispatchEvent(new Event('change', { bubbles: true }));
       }
     }
 

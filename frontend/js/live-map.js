@@ -38,7 +38,7 @@ function getPriorityMeta(score = 0) {
     return {
       bucket: "medium",
       label: "Medium",
-      markerColor: "#f97316",
+      markerColor: "#059669",
       className: "map-priority-medium"
     };
   }
@@ -460,7 +460,7 @@ const MapModule = {
 
     if (this.interactionEnabled) {
       interactionBtn.setAttribute("title", "Lock map interaction");
-      interactionBtn.classList.add("text-orange-600");
+      interactionBtn.classList.add("text-emerald-600");
       if (icon) {
         icon.classList.remove("fa-lock");
         icon.classList.add("fa-lock-open");
@@ -469,13 +469,13 @@ const MapModule = {
         text.textContent = "Lock Map";
       }
       if (statusLabel) {
-        statusLabel.innerHTML = '<i class="fas fa-lock-open text-orange-500 text-xs mr-1"></i> Map interactive';
+        statusLabel.innerHTML = '<i class="fas fa-lock-open text-emerald-500 text-xs mr-1"></i> Map interactive';
       }
       return;
     }
 
     interactionBtn.setAttribute("title", "Enable map interaction");
-    interactionBtn.classList.remove("text-orange-600");
+    interactionBtn.classList.remove("text-emerald-600");
     if (icon) {
       icon.classList.remove("fa-lock-open");
       icon.classList.add("fa-lock");
@@ -773,7 +773,7 @@ const MapModule = {
       maxZoom: 14,
       gradient: {
         0.3: "#22c55e",
-        0.6: "#f97316",
+        0.6: "#059669",
         1.0: "#ef4444"
       }
     }).addTo(this.map);
@@ -793,7 +793,7 @@ const MapModule = {
     const text = btn.querySelector("span");
 
     if (this.heatmapEnabled) {
-      btn.classList.add("text-orange-600");
+      btn.classList.add("text-emerald-600");
       btn.setAttribute("title", "Disable heatmap");
       if (icon) {
         icon.classList.remove("fa-fire");
@@ -805,7 +805,7 @@ const MapModule = {
       return;
     }
 
-    btn.classList.remove("text-orange-600");
+    btn.classList.remove("text-emerald-600");
     btn.setAttribute("title", "Enable heatmap");
     if (icon) {
       icon.classList.remove("fa-fire-flame-curved");

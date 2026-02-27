@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
     index: true, // Index for faster email lookups
     match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
       'Please enter a valid email'
     ]
   },
@@ -189,6 +189,7 @@ userSchema.methods.comparePassword = async function(enteredPassword) {
 userSchema.methods.getPublicProfile = function() {
   return {
     id: this._id,
+    name: this.fullName,
     firstName: this.firstName,
     lastName: this.lastName,
     fullName: this.fullName,

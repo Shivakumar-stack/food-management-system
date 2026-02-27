@@ -32,7 +32,7 @@ const registerValidation = [
     .notEmpty().withMessage('Password is required')
     .isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   body('role')
-    .optional()
+    .notEmpty().withMessage('Role is required')
     .isIn(['donor', 'volunteer', 'ngo']).withMessage('Invalid role specified'),
   body('phone')
     .optional()
@@ -95,6 +95,7 @@ const changePasswordValidation = [
 
 // Public routes
 router.post('/register', registerValidation, register);
+router.post('/signup', registerValidation, register);
 router.post('/login', loginValidation, login);
 router.post('/social', socialAuthValidation, socialAuth);
 

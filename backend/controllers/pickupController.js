@@ -45,7 +45,7 @@ exports.updatePickupStatus = async (req, res) => {
 
         // Make sure the logged in user is the assigned volunteer
         if (pickup.volunteer.toString() !== req.user.id) {
-            return res.status(401).json({ success: false, message: 'Not authorized to update this pickup' });
+            return res.status(403).json({ success: false, message: 'Not authorized to update this pickup' });
         }
 
         const { status } = req.body;
