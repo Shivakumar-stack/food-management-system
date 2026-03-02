@@ -3,7 +3,23 @@ node_modules/
 .DS_Store
 logs/
 *.log
+*.txt
 /dist
 /build
 frontend/playwright-report-smoke/
 frontend/test-results/
+
+# Temporary and local test scripts
+update_layout.js
+update_topbar.js
+check-admin.js
+check-env.js
+create-test-users.js
+test-login.js
+test-password.js
+tmp_*.js
+tmp_*.py
+eslint.*
+
+# Data
+dummy_data/
