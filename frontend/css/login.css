@@ -55,11 +55,13 @@ body.auth-page {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     transform: scale(1);
     box-shadow: 0 10px 30px rgba(5, 150, 105, 0.3);
   }
+
   50% {
     transform: scale(1.05);
     box-shadow: 0 15px 40px rgba(5, 150, 105, 0.4);

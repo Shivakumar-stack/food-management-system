@@ -41,23 +41,23 @@ const apiService = {
       console.error('[API] ERROR: appConfig.API_BASE_URL is not defined!');
       throw new Error('API configuration not available. Please refresh the page.');
     }
-    
+
     const url = `${window.appConfig.API_BASE_URL}${endpoint}`;
-    
+
     const token = typeof authService !== 'undefined' ? authService.getToken() : null;
-    
+
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     try {
       const response = await fetch(url, { ...options, headers });
-      
+
       let data = {};
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
@@ -74,29 +74,29 @@ const apiService = {
           authService.logout('login.html?error=session_expired');
           return; // Stop further execution
         }
-        
+
         const errorMessage = this.resolveErrorMessage(data, response.status);
         const error = new Error(errorMessage);
         error.status = response.status;
         error.details = data.errors || [];
         throw error;
       }
-      
+
       return data;
     } catch (error) {
       // Handle network errors or other fetch-related issues
       if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-          throw new Error('Network error. Please check your internet connection.');
+        throw new Error('Network error. Please check your internet connection.');
       }
       throw error; // Re-throw other errors
     }
   },
-  
+
   // GET request
   get(endpoint) {
     return this.request(endpoint, { method: 'GET' });
   },
-  
+
   // POST request
   post(endpoint, body) {
     return this.request(endpoint, {
@@ -104,7 +104,7 @@ const apiService = {
       body: JSON.stringify(body)
     });
   },
-  
+
   // PUT request
   put(endpoint, body) {
     return this.request(endpoint, {
@@ -112,7 +112,7 @@ const apiService = {
       body: JSON.stringify(body)
     });
   },
-  
+
   // DELETE request
   delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
@@ -332,7 +332,7 @@ const donationService = {
   async create(donationData) {
     return await apiService.post('/donations', donationData);
   },
-  
+
   /**
    * Get all donations
    */
@@ -347,21 +347,21 @@ const donationService = {
     const endpoint = queryParams ? `/donations/public-map?${queryParams}` : '/donations/public-map';
     return await apiService.get(endpoint);
   },
-  
+
   /**
    * Get donation by ID
    */
   async getById(id) {
     return await apiService.get(`/donations/${id}`);
   },
-  
+
   /**
    * Update donation status
    */
   async updateStatus(id, status, notes = '') {
     return await apiService.put(`/donations/${id}/status`, { status, notes });
   },
-  
+
   /**
    * Get donation statistics
    */
@@ -424,14 +424,14 @@ const contactService = {
   async submit(formData) {
     return await apiService.post('/contact', formData);
   },
-  
+
   /**
    * Subscribe to newsletter
    */
   async subscribeNewsletter(email) {
     return await apiService.post('/contact/newsletter', { email });
   },
-  
+
   /**
    * Submit volunteer application
    */
@@ -453,7 +453,7 @@ Availability: ${volunteerData.days.join(', ')}
     };
     return await apiService.post('/contact', formData);
   },
-  
+
   /**
    * Get volunteer applications (Admin only)
    */
@@ -477,7 +477,7 @@ const ui = {
       <i class="fas ${this.getAlertIcon(type)}"></i>
       <span>${message}</span>
     `;
-    
+
     if (container) {
       container.innerHTML = '';
       container.appendChild(alertDiv);
@@ -487,13 +487,13 @@ const ui = {
       toast.className = `fixed top-4 right-4 z-50 alert alert-${type} shadow-lg`;
       toast.innerHTML = alertDiv.innerHTML;
       document.body.appendChild(toast);
-      
+
       setTimeout(() => {
         toast.remove();
       }, 5000);
     }
   },
-  
+
   /**
    * Get alert icon based on type
    */
@@ -506,7 +506,7 @@ const ui = {
     };
     return icons[type] || icons.info;
   },
-  
+
   /**
    * Show loading state on button
    */
@@ -520,7 +520,7 @@ const ui = {
       button.disabled = false;
     }
   },
-  
+
   /**
    * Format date
    */
@@ -532,7 +532,7 @@ const ui = {
       day: 'numeric'
     });
   },
-  
+
   /**
    * Format time
    */
@@ -543,14 +543,14 @@ const ui = {
       minute: '2-digit'
     });
   },
-  
+
   /**
    * Format number with commas
    */
   formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   },
-  
+
   /**
    * Animate counter
    */
@@ -558,7 +558,7 @@ const ui = {
     const start = 0;
     const increment = target / (duration / 16);
     let current = start;
-    
+
     const updateCounter = () => {
       current += increment;
       if (current < target) {
@@ -568,10 +568,10 @@ const ui = {
         element.textContent = target.toLocaleString();
       }
     };
-    
+
     updateCounter();
   },
-  
+
   /**
    * Toggle mobile menu
    */
@@ -579,7 +579,7 @@ const ui = {
     const mobileMenu = document.getElementById('mobileMenu');
     const menuIcon = document.getElementById('menuIcon');
     const menuBtn = document.getElementById('menuBtn');
-    
+
     if (mobileMenu && menuBtn) {
       const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
       menuBtn.setAttribute('aria-expanded', !isExpanded);
@@ -590,7 +590,7 @@ const ui = {
       }
     }
   },
-  
+
   /**
    * Close mobile menu
    */
@@ -598,7 +598,7 @@ const ui = {
     const mobileMenu = document.getElementById('mobileMenu');
     const menuIcon = document.getElementById('menuIcon');
     const menuBtn = document.getElementById('menuBtn');
-    
+
     if (mobileMenu && menuBtn) {
       menuBtn.setAttribute('aria-expanded', 'false');
       mobileMenu.classList.add('hidden');
@@ -630,7 +630,7 @@ const navigation = {
     this.updateNavForAuth();
     this.setupScrollBehavior();
   },
-  
+
   /**
    * Setup mobile menu toggle
    */
@@ -647,7 +647,7 @@ const navigation = {
     if (menuBtn) {
       menuBtn.addEventListener('click', ui.toggleMobileMenu);
     }
-    
+
     // Close menu when clicking outside.
     document.addEventListener('click', (e) => {
       if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
@@ -676,18 +676,18 @@ const navigation = {
       menuIcon.classList.remove('fa-times');
     }
   },
-  
+
   /**
    * Update navigation based on auth state
    */
   updateNavForAuth() {
     const navActions = document.getElementById('navActions');
     const mobileAuth = document.getElementById('mobileAuth');
-    
+
     if (authService.isLoggedIn()) {
       const user = authService.getUser();
       const userName = user ? `${user.firstName} ${user.lastName}` : 'User';
-      
+
       if (navActions) {
         navActions.innerHTML = `
           <a href="dashboard.html" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-emerald-600 font-medium transition-colors">
@@ -701,7 +701,7 @@ const navigation = {
           </button>
         `;
       }
-      
+
       if (mobileAuth) {
         mobileAuth.innerHTML = `
           <a href="dashboard.html" class="block w-full px-4 py-3 text-center bg-emerald-50 text-emerald-700 font-semibold rounded-xl">
@@ -714,7 +714,7 @@ const navigation = {
       }
     }
   },
-  
+
   /**
    * Setup scroll behavior for navbar
    */
@@ -724,19 +724,19 @@ const navigation = {
     const navbar = document.getElementById('navbar');
     if (!navbar) return;
     this.scrollBound = true;
-    
+
     let lastScroll = 0;
-    
+
     window.addEventListener('scroll', () => {
       const currentScroll = window.pageYOffset;
-      
+
       // Add shadow on scroll
       if (currentScroll > 10) {
         navbar.classList.add('shadow-md');
       } else {
         navbar.classList.remove('shadow-md');
       }
-      
+
       lastScroll = currentScroll;
     });
   }
@@ -771,69 +771,89 @@ const layout = {
   getFooterMarkup() {
     const year = new Date().getFullYear();
     return `
-<footer class="site-footer" data-footer-version="${this.footerVersion}">
-  <div class="footer-container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="index.html" class="footer-logo" aria-label="FoodBridge Home">
-          <span class="footer-logo-icon"><i class="fas fa-hand-holding-heart"></i></span>
+<footer class="site-footer bg-gray-900 border-t border-gray-800 pt-20 pb-10 text-base relative overflow-hidden" data-footer-version="${this.footerVersion}">
+  <!-- Subtle dark background glow -->
+  <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-900/10 rounded-full blur-3xl pointer-events-none -mt-40 -mr-40"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+      
+      <!-- Brand & Mission -->
+      <div class="lg:col-span-4">
+        <a href="index.html" class="flex items-center gap-3 mb-6 text-white font-extrabold text-2xl">
+          <span class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center text-xl shadow-lg shadow-emerald-900/50">
+            <i class="fas fa-hand-holding-heart"></i>
+          </span>
           <span>FoodBridge</span>
         </a>
-        <p class="footer-tagline">
-          Connecting food donors with communities in need through reliable pickup workflows and transparent impact tracking.
+        <p class="text-gray-400 mb-8 leading-relaxed text-base pr-4">
+          A revolutionary platform connecting food donors with communities in need. Track impact, schedule reliable pickups, and join the mission to end hunger sustainably.
         </p>
-        <p class="footer-trust-pill">
-          <i class="fas fa-circle-check"></i>
-          <span>Trusted by verified donors and NGOs</span>
-        </p>
-      </div>
-
-      <div class="footer-links">
-        <h3>Quick Links</h3>
-        <ul class="footer-link-list">
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="how-it-works.html">How It Works</a></li>
-          <li><a href="donate.html">Donate Food</a></li>
-          <li><a href="volunteer.html">Volunteer</a></li>
-          <li><a href="live-map.html">Live Map</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-links">
-        <h3>Resources</h3>
-        <ul class="footer-link-list">
-          <li><a href="how-it-works.html">Food Safety Guide</a></li>
-          <li><a href="about.html">Tax Benefits</a></li>
-          <li><a href="ngo-claims.html">Partner NGOs</a></li>
-          <li><a href="index.html#testimonials">Success Stories</a></li>
-          <li><a href="contact.html">FAQs</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-contact">
-        <h3>Contact &amp; Social</h3>
-        <ul>
-          <li><i class="fas fa-envelope"></i><a href="mailto:hello@foodbridge.org">hello@foodbridge.org</a></li>
-          <li><i class="fas fa-phone"></i><a href="tel:+18003663274">1-800-FOOD-BRIDGE</a></li>
-          <li><i class="fas fa-location-dot"></i><span>123 Bridge Street, Mumbai, India</span></li>
-        </ul>
-        <div class="footer-social">
-          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <div class="flex items-center gap-3">
+          <a href="#" aria-label="Facebook" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald-600 hover:text-white transition-all"><i class="fab fa-facebook-f text-lg"></i></a>
+          <a href="#" aria-label="Twitter" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald-600 hover:text-white transition-all"><i class="fab fa-twitter text-lg"></i></a>
+          <a href="#" aria-label="Instagram" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald-600 hover:text-white transition-all"><i class="fab fa-instagram text-lg"></i></a>
+          <a href="#" aria-label="LinkedIn" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald-600 hover:text-white transition-all"><i class="fab fa-linkedin-in text-lg"></i></a>
         </div>
       </div>
+
+      <!-- Links Grid -->
+      <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-8 pt-2">
+        <div>
+          <h3 class="font-bold text-white mb-6 text-lg tracking-wide uppercase">Platform</h3>
+          <ul class="space-y-4 text-gray-400 text-base font-medium">
+            <li><a href="about.html" class="hover:text-emerald-400 transition-colors">Our Mission</a></li>
+            <li><a href="how-it-works.html" class="hover:text-emerald-400 transition-colors">How It Works</a></li>
+            <li><a href="donate.html" class="hover:text-emerald-400 transition-colors flex items-center gap-2">Donate <span class="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Urgent</span></a></li>
+            <li><a href="volunteer.html" class="hover:text-emerald-400 transition-colors">Volunteer Hub</a></li>
+            <li><a href="live-map.html" class="hover:text-emerald-400 transition-colors">Live Operations Grid</a></li>
+          </ul>
+        </div>
+
+        <div>
+           <h3 class="font-bold text-white mb-6 text-lg tracking-wide uppercase">Resources</h3>
+          <ul class="space-y-4 text-gray-400 text-base font-medium">
+            <li><a href="how-it-works.html" class="hover:text-emerald-400 transition-colors">Safety Guidelines</a></li>
+            <li><a href="about.html" class="hover:text-emerald-400 transition-colors">Tax Certificates</a></li>
+            <li><a href="ngo-claims.html" class="hover:text-emerald-400 transition-colors">Verified NGOs List</a></li>
+            <li><a href="index.html#testimonials" class="hover:text-emerald-400 transition-colors">Impact Stories</a></li>
+            <li><a href="contact.html" class="hover:text-emerald-400 transition-colors">FAQs & Support</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-white mb-6 text-lg tracking-wide uppercase">Contact</h3>
+          <ul class="space-y-4 text-gray-400 text-base font-medium">
+            <li class="flex items-start gap-3">
+              <i class="fas fa-location-dot mt-1 w-5 text-emerald-500 text-lg"></i>
+              <span>123 Harmony Street<br>Bengaluru, KA 560001</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <i class="fas fa-envelope w-5 text-emerald-500 text-lg"></i>
+              <a href="mailto:hello@foodbridge.org" class="hover:text-emerald-400 transition-colors">hello@foodbridge.org</a>
+            </li>
+            <li class="flex items-center gap-3">
+              <i class="fas fa-phone w-5 text-emerald-500 text-lg"></i>
+              <a href="tel:+18003663274" class="hover:text-emerald-400 transition-colors">1-800-BRIDGE</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
     </div>
 
-    <div class="footer-bottom">
-      <p>&copy; ${year} FoodBridge. All rights reserved.</p>
-      <div class="footer-bottom-links footer-legal-links">
-        <a href="privacy-policy.html">Privacy Policy</a>
-        <a href="terms.html">Terms</a>
-        <a href="sitemap.html">Sitemap</a>
+    <!-- Bottom Bar -->
+    <div class="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-gray-800">
+      <p class="text-base text-gray-500 font-medium mb-4 md:mb-0">&copy; ${year} FoodBridge Operations. All rights reserved.</p>
+      <div class="flex flex-wrap justify-center gap-6 text-base text-gray-500 font-medium">
+        <a href="privacy-policy.html" class="hover:text-gray-300 transition-colors">Privacy</a>
+        <a href="terms.html" class="hover:text-gray-300 transition-colors">Terms of Use</a>
+        <a href="sitemap.html" class="hover:text-gray-300 transition-colors">Sitemap</a>
+        <a href="#" class="hover:text-gray-300 transition-colors">Cookie Settings</a>
       </div>
     </div>
+    
   </div>
 </footer>
     `;
@@ -923,7 +943,7 @@ const counterAnimation = {
   init() {
     const counters = document.querySelectorAll('.counter');
     if (!counters.length) return;
-    
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -934,7 +954,7 @@ const counterAnimation = {
         }
       });
     }, { threshold: 0.5 });
-    
+
     counters.forEach(counter => observer.observe(counter));
   }
 };
@@ -948,36 +968,36 @@ const testimonialSlider = {
   slides: [],
   dots: [],
   autoplayInterval: null,
-  
+
   init() {
     this.slides = document.querySelectorAll('.testimonial-slide');
     this.dots = document.querySelectorAll('#testimonialDots button');
-    
+
     if (!this.slides.length) return;
-    
+
     this.setupControls();
     this.startAutoplay();
     this.updateSlide();
   },
-  
+
   setupControls() {
     const prevBtn = document.getElementById('prevTestimonial');
     const nextBtn = document.getElementById('nextTestimonial');
-    
+
     if (prevBtn) {
       prevBtn.addEventListener('click', () => {
         this.prev();
         this.resetAutoplay();
       });
     }
-    
+
     if (nextBtn) {
       nextBtn.addEventListener('click', () => {
         this.next();
         this.resetAutoplay();
       });
     }
-    
+
     this.dots.forEach((dot, index) => {
       dot.addEventListener('click', () => {
         this.goTo(index);
@@ -985,37 +1005,37 @@ const testimonialSlider = {
       });
     });
   },
-  
+
   updateSlide() {
     this.slides.forEach((slide, index) => {
       slide.classList.toggle('active', index === this.currentSlide);
     });
-    
+
     this.dots.forEach((dot, index) => {
       dot.classList.toggle('bg-emerald-600', index === this.currentSlide);
       dot.classList.toggle('bg-emerald-200', index !== this.currentSlide);
     });
   },
-  
+
   next() {
     this.currentSlide = (this.currentSlide + 1) % this.slides.length;
     this.updateSlide();
   },
-  
+
   prev() {
     this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
     this.updateSlide();
   },
-  
+
   goTo(index) {
     this.currentSlide = index;
     this.updateSlide();
   },
-  
+
   startAutoplay() {
     this.autoplayInterval = setInterval(() => this.next(), 5000);
   },
-  
+
   resetAutoplay() {
     clearInterval(this.autoplayInterval);
     this.startAutoplay();
@@ -1033,28 +1053,28 @@ const formValidation = {
   isValidEmail(email) {
     return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
   },
-  
+
   /**
    * Validate phone
    */
   isValidPhone(phone) {
     return /^\+?[\d\s-()]+$/.test(phone);
   },
-  
+
   /**
    * Validate required field
    */
   isRequired(value) {
     return value.trim().length > 0;
   },
-  
+
   /**
    * Validate min length
    */
   minLength(value, min) {
     return value.length >= min;
   },
-  
+
   /**
    * Show field error
    */
@@ -1072,9 +1092,9 @@ const formValidation = {
       field.parentElement.appendChild(errorEl);
     }
     errorEl.textContent = message;
-    try { field.focus(); } catch (e) {}
+    try { field.focus(); } catch (e) { /* ignore */ }
   },
-  
+
   /**
    * Clear field error
    */
@@ -1087,7 +1107,7 @@ const formValidation = {
       errorEl.remove();
     }
   },
-  
+
   /**
    * Clear all errors in form
    */
@@ -1118,14 +1138,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize non-header/footer dependent components
   counterAnimation.init();
   testimonialSlider.init();
-  
+
   // Check for URL errors
   const urlParams = new URLSearchParams(window.location.search);
   const error = urlParams.get('error');
   if (error === 'session_expired') {
     ui.showAlert('Your session has expired. Please log in again.', 'warning');
   }
-  
+
   // Check for success messages
   const success = urlParams.get('success');
   if (success) {

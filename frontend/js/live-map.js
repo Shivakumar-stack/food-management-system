@@ -406,9 +406,9 @@ const MapModule = {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(toRadians(lat1)) *
-        Math.cos(toRadians(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
 
     return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   },
@@ -529,36 +529,47 @@ const MapModule = {
   },
 
   async fetchDonationsForRole() {
+    let publicDonations = [];
+    try {
+      publicDonations = await this.fetchPublicDonations(300);
+    } catch (e) {
+      console.warn("Failed to fetch public donations", e);
+    }
+
     if (this.role === "public") {
-      return this.fetchPublicDonations(300);
+      return publicDonations;
     }
 
     try {
+      let roleDonations = [];
       if (this.role === "volunteer") {
         const response = await donationService.getVolunteerAvailable();
-        return this.extractDonationCollection(response);
-      }
-
-      if (this.role === "ngo") {
+        roleDonations = this.extractDonationCollection(response);
+      } else if (this.role === "ngo") {
         const [claimableResponse, ownResponse] = await Promise.all([
           donationService.getNgoAvailable(),
           donationService.getAll({ limit: 300 })
         ]);
-
-        const claimable = this.extractDonationCollection(claimableResponse);
-        const own = this.extractDonationCollection(ownResponse);
-        const merged = new Map();
-
-        [...claimable, ...own].forEach((donation) => {
-          const id = this.getDonationId(donation);
-          if (id) merged.set(id, donation);
-        });
-
-        return Array.from(merged.values());
+        roleDonations = [
+          ...this.extractDonationCollection(claimableResponse),
+          ...this.extractDonationCollection(ownResponse)
+        ];
+      } else {
+        const response = await donationService.getAll({ limit: 300 });
+        roleDonations = this.extractDonationCollection(response);
       }
 
-      const response = await donationService.getAll({ limit: 300 });
-      return this.extractDonationCollection(response);
+      const merged = new Map();
+      publicDonations.forEach((donation) => {
+        const id = this.getDonationId(donation);
+        if (id) merged.set(id, donation);
+      });
+      roleDonations.forEach((donation) => {
+        const id = this.getDonationId(donation);
+        if (id) merged.set(id, donation);
+      });
+
+      return Array.from(merged.values());
     } catch (error) {
       const errorMessage = String(error?.message || "").toLowerCase();
       const isAccessError =

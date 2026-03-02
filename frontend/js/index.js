@@ -1,5 +1,5 @@
 // Newsletter Form Handler
-document.getElementById('newsletterForm')?.addEventListener('submit', async function(e) {
+document.getElementById('newsletterForm')?.addEventListener('submit', async function (e) {
   e.preventDefault();
   const email = document.getElementById('newsletterEmail').value;
   const messageDiv = document.getElementById('newsletterMessage');
@@ -14,7 +14,7 @@ document.getElementById('newsletterForm')?.addEventListener('submit', async func
 });
 
 // Contact Form Handler
-document.getElementById('contactForm')?.addEventListener('submit', async function(e) {
+document.getElementById('contactForm')?.addEventListener('submit', async function (e) {
   e.preventDefault();
   const formData = new FormData(this);
   const data = Object.fromEntries(formData);
@@ -189,7 +189,7 @@ if (testimonialSection) {
       }, 5500);
     };
 
-    function goToSlide(index, restartAutoplay) {
+    const goToSlide = (index, restartAutoplay) => {
       const maxSlide = getMaxSlide();
       if (maxSlide === 0) {
         currentSlide = 0;
@@ -207,7 +207,7 @@ if (testimonialSection) {
       if (restartAutoplay) {
         startAutoplay();
       }
-    }
+    };
 
     prevButton.addEventListener('click', () => goToSlide(currentSlide - 1, true));
     nextButton.addEventListener('click', () => goToSlide(currentSlide + 1, true));

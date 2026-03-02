@@ -1,0 +1,23 @@
+2026-03-02 16:09:30 [[32minfo[39m]: Initializing background cron jobs...
+2026-03-02 16:09:30 [[32minfo[39m]: Server running on port 5000 in development mode
+2026-03-02 16:09:30 [[32minfo[39m]: Health check available at http://localhost:5000/api/health
+2026-03-02 16:09:35 [[31merror[39m]: MongoDB connection attempt 1 failed:
+2026-03-02 16:09:35 [[32minfo[39m]: Retrying in 5 seconds...
+2026-03-02 16:09:45 [[31merror[39m]: MongoDB connection attempt 2 failed:
+2026-03-02 16:09:45 [[32minfo[39m]: Retrying in 5 seconds...
+2026-03-02 16:09:55 [[31merror[39m]: MongoDB connection attempt 3 failed:
+2026-03-02 16:09:55 [[32minfo[39m]: Retrying in 5 seconds...
+2026-03-02 16:09:55 [[31merror[39m]: Auto-expire background job error: Operation `donations.updateMany()` buffering timed out after 10000ms
+MongooseError: Operation `donations.updateMany()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\sk200\Desktop\food-management-system\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:187:23)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+2026-03-02 16:10:05 [[31merror[39m]: MongoDB connection attempt 4 failed:
+2026-03-02 16:10:05 [[32minfo[39m]: Retrying in 5 seconds...
+2026-03-02 16:10:10 [[31merror[39m]: Auto-expire background job error: Operation `donations.updateMany()` buffering timed out after 10000ms
+MongooseError: Operation `donations.updateMany()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\sk200\Desktop\food-management-system\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:187:23)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+2026-03-02 16:10:15 [[31merror[39m]: MongoDB connection attempt 5 failed:
+2026-03-02 16:10:15 [[31merror[39m]: Max retry attempts reached. Exiting...

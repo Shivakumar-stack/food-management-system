@@ -1,0 +1,79 @@
+[
+    {
+        "_id": {
+            "$oid": "60e8d0e2f5b4d700155cb4f1"
+        },
+        "firstName": "Green Valley",
+        "lastName": "Farms",
+        "email": "greenvalley@example.com",
+        "password": "$2a$12$somesecurehash",
+        "role": "donor",
+        "organization": {
+            "name": "Green Valley Farms",
+            "type": "corporate"
+        },
+        "address": {
+            "street": "12 Agri Lane",
+            "city": "Mumbai",
+            "state": "MH",
+            "zipCode": "400050",
+            "country": "India",
+            "location": {
+                "type": "Point",
+                "coordinates": [
+                    72.8777,
+                    19.0760
+                ]
+            }
+        },
+        "donorInfo": {
+            "totalDonations": 5,
+            "mealsProvided": 200,
+            "isVerified": true
+        }
+    },
+    {
+        "_id": {
+            "$oid": "60e8d0e2f5b4d700155cb4f2"
+        },
+        "firstName": "Alice",
+        "lastName": "Smith",
+        "email": "volunteer@example.com",
+        "password": "$2a$12$somesecurehash",
+        "role": "volunteer",
+        "volunteerInfo": {
+            "isAvailable": true,
+            "vehicleType": "van",
+            "serviceArea": [
+                "Mumbai"
+            ],
+            "completedPickups": 12,
+            "rating": 4.8
+        }
+    },
+    {
+        "_id": {
+            "$oid": "60e8d0e2f5b4d700155cb4f3"
+        },
+        "firstName": "Hope",
+        "lastName": "Foundation",
+        "email": "hope@example.com",
+        "password": "$2a$12$somesecurehash",
+        "role": "ngo",
+        "ngoInfo": {
+            "mission": "Feeding the hungry",
+            "beneficiaries": 500,
+            "isVerified": true
+        }
+    },
+    {
+        "_id": {
+            "$oid": "60e8d0e2f5b4d700155cb4f4"
+        },
+        "firstName": "Admin",
+        "lastName": "User",
+        "email": "admin@foodshare.org",
+        "password": "$2a$12$somesecurehash",
+        "role": "admin"
+    }
+]

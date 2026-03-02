@@ -352,6 +352,7 @@
 
     const closeDropdown = () => {
       profile.classList.remove("open");
+      dropdown.classList.add("hidden");
       profileBtn.setAttribute("aria-expanded", "false");
       dropdown.setAttribute("aria-hidden", "true");
     };
@@ -359,6 +360,7 @@
     profileBtn.addEventListener("click", () => {
       const willOpen = !profile.classList.contains("open");
       profile.classList.toggle("open", willOpen);
+      dropdown.classList.toggle("hidden", !willOpen);
       profileBtn.setAttribute("aria-expanded", String(willOpen));
       dropdown.setAttribute("aria-hidden", String(!willOpen));
     });
