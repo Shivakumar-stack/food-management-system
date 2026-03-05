@@ -271,7 +271,7 @@ const authService = {
     this.clearSession();
     sessionStorage.setItem(AUTH_STORAGE_KEYS.token, token);
     sessionStorage.setItem(AUTH_STORAGE_KEYS.user, JSON.stringify(user));
-    console.log('Session set successfully for user:', user.email);
+    // Session set successfully
   },
 
   updateUser(userData) {

@@ -48,9 +48,7 @@ const donationSchema = new mongoose.Schema({
     location: {
       type: {
         type: String,
-        enum: ['Point'],
-        required: true,
-        default: 'Point'
+        enum: ['Point']
       },
       coordinates: {
         type: [Number], // [longitude, latitude]
@@ -148,17 +146,17 @@ donationSchema.index({ 'pickupAddress.location': '2dsphere' });
 donationSchema.index({ createdAt: -1 });
 
 // Virtual for time remaining until pickup
-donationSchema.virtual('timeUntilPickup').get(function() {
+donationSchema.virtual('timeUntilPickup').get(function () {
   return this.pickupTime - new Date();
 });
 
 // Method to check if donation is expired
-donationSchema.methods.isExpired = function() {
+donationSchema.methods.isExpired = function () {
   return new Date() > this.foodSafety.expiryTime;
 };
 
 // Static method to get donation statistics
-donationSchema.statics.getStatistics = async function() {
+donationSchema.statics.getStatistics = async function () {
   const stats = await this.aggregate([
     {
       $group: {
@@ -168,7 +166,7 @@ donationSchema.statics.getStatistics = async function() {
       }
     }
   ]);
-  
+
   return stats;
 };
 

@@ -268,8 +268,7 @@ exports.createDonation = async (req, res) => {
       emitRealtimeEvent(req, 'newDonation', donation);
       res.status(201).json({
         success: true,
-        message: 'Donation created successfully',
-        data: { donation }
+        data: donation
       });
     } else {
       res.status(500).json({

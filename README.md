@@ -31,19 +31,20 @@ A full-stack web application designed to facilitate food donation and distributi
 
 ```text
 food-management-system/
-├── controllers/      # Route request handlers
-├── middleware/       # Express middleware (Auth, Error Handling, Validation)
-├── models/           # Mongoose schemas
-├── routes/           # REST API routes
-├── config/           # DB, environment, and logger configurations
-├── services/         # Core business logic (Geocoding, Donations, Cron Jobs)
-├── sockets/          # Socket.io event configurations
-├── frontend/         # Served client application (HTML, CSS, JS)
-│   ├── css/
-│   ├── images/
-│   ├── js/
-│   └── *.html
-└── server.js         # Main server entry point
+├── backend/          # Backend server code
+│   ├── controllers/  # Route request handlers
+│   ├── middleware/   # Express middleware (Auth, Error Handling, Validation)
+│   ├── models/       # Mongoose schemas
+│   ├── routes/       # REST API routes
+│   ├── config/       # DB, environment, and logger configurations
+│   ├── services/     # Core business logic (Geocoding, Donations, Cron Jobs)
+│   ├── sockets/      # Socket.io event configurations
+│   └── server.js     # Main server entry point
+└── frontend/         # Served client application (HTML, CSS, JS)
+    ├── css/
+    ├── images/
+    ├── js/
+    └── *.html
 ```
 
 ## 🚀 Getting Started
@@ -61,28 +62,30 @@ git clone https://github.com/Shivakumar-stack/food-management-system.git
 cd food-management-system
 ```
 
-### 2. Install Dependencies
+### 2. Install Dependencies & Run
+
+#### Backend Setup
+
+Open a terminal in the root directory:
 
 ```bash
 npm install
+npm start
 ```
 
-Create a `.env` file in the root directory. You can use `.env.example` as a template:
+The backend server will run on `http://localhost:5000` and automatically serve the API.
 
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-```
+#### Frontend Setup
 
-### 3. Running the Application
+Open a separate terminal and navigate to the frontend directory:
 
-**Start the Development Server:**
 ```bash
-npm run dev
+cd frontend
+npm install
+npm run serve
 ```
 
-The application exposes the backend API on `http://localhost:5000/api` and statically serves the frontend on `http://localhost:5000`. Simply navigate to `http://localhost:5000/index.html` in your browser.
+The frontend will start a live-server precisely on `http://localhost:5500`. Navigate to this URL in your browser.
 
 ## 🛡️ Recent Architectural Improvements
 

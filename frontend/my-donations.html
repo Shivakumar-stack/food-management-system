@@ -1,310 +1,204 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Donations - FoodBridge</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="./css/styles.css?v=20260213c" />
-    <link rel="stylesheet" href="./css/dashboard.css?v=20260218b" />
-    <link rel="stylesheet" href="./css/custom.css" />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="dashboard-page">
-    <div class="dashboard-shell" data-protected-content>
-      <aside
-        class="dashboard-sidebar"
-        id="dashboardSidebar"
-        aria-label="Sidebar navigation"
-      >
-        <div class="sidebar-head">
-          <a
-            class="dashboard-brand"
-            href="index.html"
-            aria-label="FoodBridge Home"
-          >
-            <span class="dashboard-brand-icon"
-              ><i class="fas fa-hand-holding-heart"></i
-            ></span>
-            <span class="brand-text">FoodBridge</span>
-          </a>
-          <button
-            type="button"
-            class="sidebar-collapse-btn"
-            id="sidebarCollapseBtn"
-            aria-label="Collapse sidebar"
-          >
-            <i class="fa-solid fa-angle-left"></i>
-          </button>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donations - FoodBridge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="./css/styles.css?v=20260213c" />
+  <link rel="stylesheet" href="./css/dashboard.css?v=20260218b" />
+  <link rel="stylesheet" href="./css/custom.css" />
 
-        <nav class="dashboard-links" aria-label="Primary navigation">
-          <a
-            class="dashboard-link"
-            href="dashboard.html"
-            data-role="donor,volunteer,ngo,admin"
-          >
-            <i class="fa-solid fa-chart-line dashboard-link-icon"></i>
-            <span class="dashboard-link-text">Dashboard</span>
-          </a>
-          <a class="dashboard-link" href="donate.html" data-role="donor">
-            <i class="fa-solid fa-hand-holding-heart dashboard-link-icon"></i>
-            <span class="dashboard-link-text">Donate</span>
-          </a>
-          <a
-            class="dashboard-link active"
-            href="my-donations.html"
-            data-role="donor"
-          >
-            <i class="fa-solid fa-box-open dashboard-link-icon"></i>
-            <span class="dashboard-link-text">Donations</span>
-          </a>
-          <a
-            class="dashboard-link"
-            href="volunteer-pickups.html"
-            data-role="volunteer"
-          >
-            <i class="fa-solid fa-truck dashboard-link-icon"></i>
-            <span class="dashboard-link-text">Pickups</span>
-          </a>
-          <a class="dashboard-link" href="ngo-claims.html" data-role="ngo">
-            <i class="fa-solid fa-building dashboard-link-icon"></i>
-            <span class="dashboard-link-text">Claims</span>
-          </a>
-          <a
-            class="dashboard-link"
-            href="admin-analytics.html"
-            data-role="admin"
-          >
-            <i class="fa-solid fa-chart-simple dashboard-link-icon"></i>
-            <span class="dashboard-link-text">Analytics</span>
-          </a>
-          <button
-            type="button"
-            class="dashboard-link dashboard-link-button"
-            id="logoutBtn"
-            data-role="donor,volunteer,ngo,admin"
-          >
-            <i
-              class="fa-solid fa-arrow-right-from-bracket dashboard-link-icon"
-            ></i>
-            <span class="dashboard-link-text">Sign Out</span>
-          </button>
-        </nav>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-        <div class="sidebar-foot">
-          <p class="sidebar-meta-label">Workspace</p>
-          <p class="sidebar-meta-value" id="sidebarRoleLabel">
-            Enterprise Panel
-          </p>
-        </div>
-      </aside>
-
-      <div
-        class="dashboard-backdrop"
-        id="dashboardBackdrop"
-        aria-hidden="true"
-      ></div>
-
-      <div class="dashboard-stage">
-        <header class="dashboard-topbar">
-          <div class="topbar-left">
-            <button
-              type="button"
-              class="sidebar-mobile-toggle"
-              id="sidebarMobileToggle"
-              aria-label="Open sidebar"
-            >
-              <i class="fa-solid fa-bars"></i>
-            </button>
-            <div class="topbar-title-wrap">
-              <h1 class="text-xl font-bold text-gray-900" data-page-heading>
-                Donations
-              </h1>
-              <p class="text-sm text-gray-500">Track your donation history.</p>
-            </div>
-          </div>
-          <div class="topbar-right">
-            <label
-              class="topbar-search flex items-center px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition-all"
-              aria-label="Search dashboard"
-            >
-              <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-              <input
-                type="search"
-                placeholder="Search..."
-                class="bg-transparent border-none outline-none ml-2 text-sm w-full focus:ring-0"
-                autocomplete="off"
-              />
-            </label>
-
-            <button
-              type="button"
-              class="topbar-icon-btn topbar-notification-btn relative p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Notifications"
-            >
-              <i class="fa-regular fa-bell text-lg"></i>
-              <span
-                class="absolute top-1 right-1 w-4 h-4 bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white"
-                >3</span
-              >
-            </button>
-
-            <div class="topbar-profile" id="topbarProfile">
-              <button
-                type="button"
-                class="topbar-profile-btn border border-emerald-100 rounded-full px-2 py-1 flex items-center gap-2 hover:bg-emerald-50 transition-colors"
-                id="topbarProfileBtn"
-                aria-expanded="false"
-                aria-label="Open profile menu"
-              >
-                <span
-                  class="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-semibold text-sm"
-                  id="topbarAvatar"
-                  >A</span
-                >
-                <span class="topbar-profile-meta hidden md:block text-left">
-                  <strong
-                    id="topbarUserName"
-                    class="block text-sm font-semibold text-gray-800"
-                    >Account</strong
-                  >
-                  <small id="topbarUserRole" class="block text-xs text-gray-500"
-                    >Team member</small
-                  >
-                </span>
-                <i
-                  class="fa-solid fa-chevron-down text-xs text-gray-400 ml-1"
-                ></i>
-              </button>
-              <div
-                class="topbar-dropdown absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 hidden"
-                id="topbarDropdown"
-                role="menu"
-                aria-hidden="true"
-              >
-                <div
-                  class="px-4 py-3 border-b border-gray-100 mb-2 block md:hidden"
-                >
-                  <p class="font-semibold text-sm text-gray-800">Account</p>
-                  <p class="text-xs text-gray-500">Team member</p>
-                </div>
-                <a
-                  href="dashboard.html"
-                  class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-                  role="menuitem"
-                >
-                  <i class="fa-regular fa-user w-4"></i> My Profile
-                </a>
-                <a
-                  href="index.html"
-                  class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-                  role="menuitem"
-                >
-                  <i class="fa-solid fa-globe w-4"></i> Open Website
-                </a>
-                <div class="h-px bg-gray-100 my-2"></div>
-                <button
-                  type="button"
-                  class="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium"
-                  id="topbarLogoutBtn"
-                  role="menuitem"
-                >
-                  <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Sign
-                  Out
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <main class="dashboard-main p-8 bg-gray-50 min-h-screen">
-          <div class="dashboard-content max-w-[1400px] mx-auto space-y-6">
-            <section
-              class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm page-card"
-            >
-              <div class="page-toolbar flex justify-between items-center mb-6">
-                <div>
-                  <h2 class="page-heading" id="donationsPageTitle">
-                    Donations
-                  </h2>
-                  <p class="text-sm text-gray-500 page-subtitle">
-                    Live list from real donation records.
-                  </p>
-                </div>
-                <div class="table-tools">
-                  <label class="table-search" aria-label="Search donations">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input
-                      type="search"
-                      id="donationsSearchInput"
-                      placeholder="Search donations"
-                    />
-                  </label>
-                  <select
-                    id="donationsStatusFilter"
-                    class="table-filter"
-                    aria-label="Filter donation status"
-                  >
-                    <option value="all">All statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="accepted">Accepted</option>
-                    <option value="picked_up">Picked up</option>
-                    <option value="in_transit">In transit</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="expired">Expired</option>
-                  </select>
-                  <button
-                    type="button"
-                    id="refreshDonationsBtn"
-                    class="pending-view-all"
-                  >
-                    Refresh
-                  </button>
-                </div>
-              </div>
-
-              <div class="table-shell">
-                <div class="table-head" aria-hidden="true">
-                  <span>Donation</span>
-                  <span>Schedule</span>
-                  <span>Status</span>
-                </div>
-                <ul
-                  class="pending-list panel-list-scroll"
-                  id="donationsList"
-                ></ul>
-              </div>
-
-              <div class="table-pagination" aria-hidden="true">
-                <button type="button" class="table-page-btn" disabled>
-                  Previous
-                </button>
-                <span>Page 1 of 1</span>
-                <button type="button" class="table-page-btn" disabled>
-                  Next
-                </button>
-              </div>
-            </section>
-          </div>
-        </main>
+<body class="dashboard-page">
+  <div class="dashboard-shell" data-protected-content>
+    <aside class="dashboard-sidebar" id="dashboardSidebar" aria-label="Sidebar navigation">
+      <div class="sidebar-head">
+        <a class="dashboard-brand" href="index.html" aria-label="FoodBridge Home">
+          <span class="dashboard-brand-icon"><i class="fas fa-hand-holding-heart"></i></span>
+          <span class="brand-text">FoodBridge</span>
+        </a>
+        <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar">
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
       </div>
-    </div>
 
-    <script src="./js/config.js?v=20260214a" defer></script>
-    <script src="./js/app.js?v=20260214c" defer></script>
-    <script src="./js/auth-guard.js?v=20260214a" defer></script>
-    <script src="./js/dashboard-layout.js?v=20260218b" defer></script>
-    <script src="./js/my-donations.js?v=20260218a" defer></script>
-  </body>
+      <nav class="dashboard-links" aria-label="Primary navigation">
+        <a class="dashboard-link" href="dashboard.html" data-role="donor,volunteer,ngo,admin">
+          <i class="fa-solid fa-chart-line dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Dashboard</span>
+        </a>
+        <a class="dashboard-link" href="donate.html" data-role="donor">
+          <i class="fa-solid fa-hand-holding-heart dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Donate</span>
+        </a>
+        <a class="dashboard-link active" href="my-donations.html" data-role="donor">
+          <i class="fa-solid fa-box-open dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Donations</span>
+        </a>
+        <a class="dashboard-link" href="volunteer-pickups.html" data-role="volunteer">
+          <i class="fa-solid fa-truck dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Pickups</span>
+        </a>
+        <a class="dashboard-link" href="ngo-claims.html" data-role="ngo">
+          <i class="fa-solid fa-building dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Claims</span>
+        </a>
+        <a class="dashboard-link" href="admin-analytics.html" data-role="admin">
+          <i class="fa-solid fa-chart-simple dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Analytics</span>
+        </a>
+        <button type="button" class="dashboard-link dashboard-link-button" id="logoutBtn"
+          data-role="donor,volunteer,ngo,admin">
+          <i class="fa-solid fa-arrow-right-from-bracket dashboard-link-icon"></i>
+          <span class="dashboard-link-text">Sign Out</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p class="sidebar-meta-label">Workspace</p>
+        <p class="sidebar-meta-value" id="sidebarRoleLabel">
+          Enterprise Panel
+        </p>
+      </div>
+    </aside>
+
+    <div class="dashboard-backdrop" id="dashboardBackdrop" aria-hidden="true"></div>
+
+    <div class="dashboard-stage">
+      <header class="dashboard-topbar">
+        <div class="topbar-left">
+          <button type="button" class="sidebar-mobile-toggle" id="sidebarMobileToggle" aria-label="Open sidebar">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="topbar-title-wrap">
+            <h1 class="text-xl font-bold text-gray-900" data-page-heading>
+              Donations
+            </h1>
+            <p class="text-sm text-gray-500">Track your donation history.</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <label
+            class="topbar-search flex items-center px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition-all"
+            aria-label="Search dashboard">
+            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+            <input type="search" placeholder="Search..."
+              class="bg-transparent border-none outline-none ml-2 text-sm w-full focus:ring-0" autocomplete="off" />
+          </label>
+
+
+
+          <div class="topbar-profile" id="topbarProfile">
+            <button type="button"
+              class="topbar-profile-btn border border-emerald-100 rounded-full px-2 py-1 flex items-center gap-2 hover:bg-emerald-50 transition-colors"
+              id="topbarProfileBtn" aria-expanded="false" aria-label="Open profile menu">
+              <span
+                class="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-semibold text-sm"
+                id="topbarAvatar">A</span>
+              <span class="topbar-profile-meta hidden md:block text-left">
+                <strong id="topbarUserName" class="block text-sm font-semibold text-gray-800">Account</strong>
+                <small id="topbarUserRole" class="block text-xs text-gray-500">Team member</small>
+              </span>
+              <i class="fa-solid fa-chevron-down text-xs text-gray-400 ml-1"></i>
+            </button>
+            <div
+              class="topbar-dropdown absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 hidden"
+              id="topbarDropdown" role="menu" aria-hidden="true">
+              <div class="px-4 py-3 border-b border-gray-100 mb-2 block md:hidden">
+                <p class="font-semibold text-sm text-gray-800">Account</p>
+                <p class="text-xs text-gray-500">Team member</p>
+              </div>
+              <a href="dashboard.html"
+                class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                role="menuitem">
+                <i class="fa-regular fa-user w-4"></i> My Profile
+              </a>
+              <a href="index.html"
+                class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                role="menuitem">
+                <i class="fa-solid fa-globe w-4"></i> Open Website
+              </a>
+              <div class="h-px bg-gray-100 my-2"></div>
+              <button type="button"
+                class="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium"
+                id="topbarLogoutBtn" role="menuitem">
+                <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Sign
+                Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard-main p-8 bg-gray-50 min-h-screen">
+        <div class="dashboard-content max-w-[1400px] mx-auto space-y-6">
+          <section class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm page-card">
+            <div class="page-toolbar flex justify-between items-center mb-6">
+              <div>
+                <h2 class="page-heading" id="donationsPageTitle">
+                  Donations
+                </h2>
+                <p class="text-sm text-gray-500 page-subtitle">
+                  Live list from real donation records.
+                </p>
+              </div>
+              <div class="table-tools">
+                <label class="table-search" aria-label="Search donations">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="search" id="donationsSearchInput" placeholder="Search donations" />
+                </label>
+                <select id="donationsStatusFilter" class="table-filter" aria-label="Filter donation status">
+                  <option value="all">All statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="picked_up">Picked up</option>
+                  <option value="in_transit">In transit</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="expired">Expired</option>
+                </select>
+                <button type="button" id="refreshDonationsBtn" class="pending-view-all">
+                  Refresh
+                </button>
+              </div>
+            </div>
+
+            <div class="table-shell">
+              <div class="table-head" aria-hidden="true">
+                <span>Donation</span>
+                <span>Schedule</span>
+                <span>Status</span>
+              </div>
+              <ul class="pending-list panel-list-scroll" id="donationsList"></ul>
+            </div>
+
+            <div class="table-pagination" aria-hidden="true">
+              <button type="button" class="table-page-btn" disabled>
+                Previous
+              </button>
+              <span>Page 1 of 1</span>
+              <button type="button" class="table-page-btn" disabled>
+                Next
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="./js/config.js?v=20260214a" defer></script>
+  <script src="./js/app.js?v=20260214c" defer></script>
+  <script src="./js/auth-guard.js?v=20260214a" defer></script>
+  <script src="./js/dashboard-layout.js?v=20260218b" defer></script>
+  <script src="./js/my-donations.js?v=20260218a" defer></script>
+</body>
+
 </html>

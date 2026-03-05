@@ -1,8 +1,6 @@
 const dashboardState = {
   pendingDonations: [],
-  notificationTimer: null,
-  latestNotificationId: null,
-  notificationBootstrapped: false,
+
   role: "donor"
 };
 
@@ -41,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindUserInfo(firstName, role);
   bindLogout();
   bindPendingModal();
-  startNotificationPolling();
+
 
   try {
     const [statsResult, donationsResult] = await Promise.allSettled([
@@ -140,52 +138,7 @@ function applySidebarRoles(role) {
   });
 }
 
-/* ================= NOTIFICATIONS ================= */
 
-function startNotificationPolling() {
-  pollNotifications();
-
-  if (dashboardState.notificationTimer) {
-    window.clearInterval(dashboardState.notificationTimer);
-  }
-
-  dashboardState.notificationTimer = window.setInterval(pollNotifications, 15000);
-
-  if (!dashboardState.unloadBound) {
-    window.addEventListener("beforeunload", () => {
-      if (dashboardState.notificationTimer) {
-        window.clearInterval(dashboardState.notificationTimer);
-      }
-    });
-    dashboardState.unloadBound = true;
-  }
-}
-
-async function pollNotifications() {
-  if (typeof apiService === "undefined") return;
-
-  try {
-    const response = await apiService.get("/notifications");
-    const notifications =
-      (Array.isArray(response?.data?.notifications) && response.data.notifications) ||
-      (Array.isArray(response?.data) && response.data) ||
-      [];
-    const latest = notifications[0];
-    const latestId = latest?._id || null;
-
-    if (!dashboardState.notificationBootstrapped) {
-      dashboardState.notificationBootstrapped = true;
-      dashboardState.latestNotificationId = latestId;
-      return;
-    }
-
-    if (latestId && dashboardState.latestNotificationId !== latestId) {
-      dashboardState.latestNotificationId = latestId;
-    }
-  } catch (error) {
-    // Silent on polling failures to avoid noisy console spam on intermittent network issues.
-  }
-}
 
 /* ================= DASHBOARD RENDER ================= */
 
@@ -258,8 +211,8 @@ function renderPendingList(targetId, items, maxItems = items.length) {
 
       const notes = donation.notes
         ? `<p class="pending-notes">Instructions: ${escapeHtml(
-            donation.notes
-          )}</p>`
+          donation.notes
+        )}</p>`
         : "";
 
       if (isModalList) {

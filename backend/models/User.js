@@ -72,9 +72,7 @@ const userSchema = new mongoose.Schema({
     location: {
       type: {
         type: String,
-        enum: ['Point'],
-        required: true,
-        default: 'Point'
+        enum: ['Point']
       },
       coordinates: {
         type: [Number], // [longitude, latitude]
@@ -146,24 +144,24 @@ userSchema.index({ 'address.city': 1 });
 userSchema.index({ 'address.location': '2dsphere' });
 
 // Virtual for full name
-userSchema.virtual('fullName').get(function() {
+userSchema.virtual('fullName').get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
 // Virtual for initials
-userSchema.virtual('initials').get(function() {
+userSchema.virtual('initials').get(function () {
   return `${this.firstName.charAt(0)}${this.lastName.charAt(0)}`.toUpperCase();
 });
 
 /**
  * Hash password before saving
  */
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   // Only hash if password is modified
   if (!this.isModified('password')) {
     return next();
   }
-  
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
@@ -178,7 +176,7 @@ userSchema.pre('save', async function(next) {
  * @param {string} enteredPassword - Password to compare
  * @returns {Promise<boolean>} - Whether passwords match
  */
-userSchema.methods.comparePassword = async function(enteredPassword) {
+userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
@@ -186,7 +184,7 @@ userSchema.methods.comparePassword = async function(enteredPassword) {
  * Get public profile (removes sensitive data)
  * @returns {Object} - Public user data
  */
-userSchema.methods.getPublicProfile = function() {
+userSchema.methods.getPublicProfile = function () {
   return {
     id: this._id,
     name: this.fullName,
