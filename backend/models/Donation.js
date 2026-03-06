@@ -5,9 +5,13 @@ const mongoose = require('mongoose');
  */
 const donationSchema = new mongoose.Schema({
   // Reference to the donor
-  donor: {
+  donor_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    required: true
+  },
+  donorName: {
+    type: String,
     required: true
   },
   // Reference to the approved claim
@@ -17,18 +21,22 @@ const donationSchema = new mongoose.Schema({
     default: null
   },
   // Food details
-  foodItems: [{
-    name: {
+  items: [{
+    itemName: {
       type: String,
       required: true,
       trim: true
     },
     category: {
       type: String,
-      enum: ['cooked', 'raw', 'packaged', 'baked', 'beverages', 'dairy', 'fruits', 'vegetables', 'other'],
+      enum: ['Cooked Food', 'Raw Ingredients', 'Packaged', 'Baked Goods', 'Beverages', 'Dairy', 'Fruits', 'Vegetables', 'Other'],
       required: true
     },
     quantity: {
+      type: String,
+      required: true
+    },
+    unit: {
       type: String,
       required: true
     },
@@ -40,23 +48,14 @@ const donationSchema = new mongoose.Schema({
     specialNotes: String
   }],
   // Pickup location
-  pickupAddress: {
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zipCode: { type: String, required: true },
-    location: {
-      type: {
-        type: String,
-        enum: ['Point']
-      },
-      coordinates: {
-        type: [Number], // [longitude, latitude]
-      },
-    },
-  },
+  address: { type: String, required: true },
+  city: { type: String, required: true },
+  state: { type: String, required: true },
+  zip: { type: String, required: true },
+  lat: { type: Number },
+  lng: { type: Number },
   // Pickup schedule
-  pickupTime: {
+  pickup_datetime: {
     type: Date,
     required: true
   },
@@ -67,14 +66,19 @@ const donationSchema = new mongoose.Schema({
   // Status tracking
   status: {
     type: String,
-    enum: ['pending', 'claimed', 'closed', 'cancelled'],
+    enum: ['pending', 'broadcasted', 'claimed', 'accepted', 'picked_up', 'in_transit', 'delivered', 'closed', 'completed', 'cancelled', 'Pending', 'Broadcasted', 'Accepted', 'PickedUp', 'Delivered', 'Completed'],
     default: 'pending'
+  },
+  assigned_volunteer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Volunteer',
+    default: null
   },
   // Status history for tracking
   statusHistory: [{
     status: {
       type: String,
-      enum: ['pending', 'claimed', 'closed', 'cancelled']
+      enum: ['pending', 'broadcasted', 'claimed', 'accepted', 'picked_up', 'in_transit', 'delivered', 'closed', 'completed', 'cancelled', 'Pending', 'Broadcasted', 'Accepted', 'PickedUp', 'Delivered', 'Completed']
     },
     timestamp: { type: Date, default: Date.now },
     updatedBy: {
@@ -104,6 +108,12 @@ const donationSchema = new mongoose.Schema({
   priorityScore: {
     type: Number,
     default: 0
+  },
+  // User-defined urgency level for the donation
+  priority: {
+    type: String,
+    enum: ['low', 'medium', 'high', 'critical', 'Fast Track (+2h)', 'Priority (+4h)', 'Tomorrow Morning'],
+    default: 'medium'
   },
   // Additional information
   notes: String,
@@ -138,16 +148,15 @@ const donationSchema = new mongoose.Schema({
 });
 
 // Indexes
-donationSchema.index({ donor: 1 });
+donationSchema.index({ donor_id: 1 });
 donationSchema.index({ status: 1 });
-donationSchema.index({ pickupTime: 1 });
-donationSchema.index({ 'pickupAddress.city': 1 });
-donationSchema.index({ 'pickupAddress.location': '2dsphere' });
+donationSchema.index({ pickup_datetime: 1 });
+donationSchema.index({ city: 1 });
 donationSchema.index({ createdAt: -1 });
 
 // Virtual for time remaining until pickup
 donationSchema.virtual('timeUntilPickup').get(function () {
-  return this.pickupTime - new Date();
+  return this.pickup_datetime - new Date();
 });
 
 // Method to check if donation is expired

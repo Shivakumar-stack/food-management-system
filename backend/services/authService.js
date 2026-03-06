@@ -43,6 +43,7 @@ const registerUser = async (userData) => {
   };
 
   const user = await User.create({
+    name: (firstName + ' ' + lastName).trim(),
     firstName,
     lastName,
     email: email.toLowerCase(),
@@ -88,7 +89,7 @@ const loginUser = async (email, password) => {
   // Update last login
   user.lastLogin = new Date();
   user.loginCount += 1;
-  await user.save();
+  await user.save({ validateBeforeSave: false });
 
   return user;
 };
@@ -103,34 +104,35 @@ const loginUser = async (email, password) => {
  * @throws {Error} If the user account is inactive.
  */
 const handleSocialAuth = async (socialProfile, provider, role) => {
-    const email = (socialProfile.email || `demo.${provider}.${Date.now()}@foodbridge.local`).toLowerCase();
-    const firstName = socialProfile.firstName || provider;
-    const lastName = socialProfile.lastName || 'User';
+  const email = (socialProfile.email || `demo.${provider}.${Date.now()}@foodbridge.local`).toLowerCase();
+  const firstName = socialProfile.firstName || provider;
+  const lastName = socialProfile.lastName || 'User';
 
-    let user = await User.findOne({ email });
+  let user = await User.findOne({ email });
 
-    if (!user) {
-      user = await User.create({
-        firstName,
-        lastName,
-        email,
-        password: crypto.randomBytes(16).toString('hex'), // Create a random password
-        role: role || 'donor',
-        phone: ''
-      });
-    }
+  if (!user) {
+    user = await User.create({
+      name: (firstName + ' ' + lastName).trim(),
+      firstName,
+      lastName,
+      email,
+      password: crypto.randomBytes(16).toString('hex'), // Create a random password
+      role: role || 'donor',
+      phone: ''
+    });
+  }
 
-    if (user.status !== 'active') {
-        const error = new Error('Account is not active. Please contact support.');
-        error.statusCode = 403;
-        throw error;
-    }
+  if (user.status !== 'active') {
+    const error = new Error('Account is not active. Please contact support.');
+    error.statusCode = 403;
+    throw error;
+  }
 
-    user.lastLogin = new Date();
-    user.loginCount += 1;
-    await user.save();
+  user.lastLogin = new Date();
+  user.loginCount += 1;
+  await user.save({ validateBeforeSave: false });
 
-    return user;
+  return user;
 };
 
 

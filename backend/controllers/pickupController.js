@@ -54,11 +54,25 @@ exports.updatePickupStatus = async (req, res) => {
         pickup.status = status;
         if (status === 'completed') {
             pickup.completionTime = Date.now();
-            
+
             const donation = await Donation.findById(pickup.donation);
-            if(donation){
+            if (donation) {
                 donation.status = 'closed';
                 await donation.save();
+
+                const Delivery = require('../models/Delivery');
+                const Claim = require('../models/Claim');
+                const claim = await Claim.findOne({ donation: donation._id });
+
+                await Delivery.create({
+                    delivery_id: `DEL-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+                    donation_id: donation._id,
+                    volunteer_id: pickup.volunteer,
+                    ngo_id: claim ? claim.ngo : pickup.volunteer, // fallback
+                    delivery_status: 'delivered',
+                    pickup_time: pickup.pickupTime,
+                    delivery_time: Date.now()
+                });
             }
         }
         await pickup.save();

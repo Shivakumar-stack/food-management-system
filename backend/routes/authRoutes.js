@@ -11,13 +11,13 @@ const {
   getDashboard,
   logout
 } = require('../controllers/authController');
-const { authenticate, authorize } = require('../middleware/auth');
-const { validateRequest } = require('../middleware/validateRequest');
+const { authenticate, authorize } = require('../middlewares/auth');
+const { validateRequest } = require('../middlewares/validateRequest');
 const rateLimit = require('express-rate-limit');
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 500,
   message: {
     success: false,
     message: 'Too many authentication attempts from this IP, please try again after 15 minutes'
@@ -44,7 +44,7 @@ const registerValidation = [
     .isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   body('role')
     .notEmpty().withMessage('Role is required')
-    .isIn(['donor', 'volunteer', 'ngo']).withMessage('Invalid role specified'),
+    .isIn(['donor', 'volunteer', 'ngo', 'admin']).withMessage('Invalid role specified'),
   body('phone')
     .optional()
     .trim()

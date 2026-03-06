@@ -6,9 +6,15 @@ const bcrypt = require('bcryptjs');
  * Supports multiple roles: donor, volunteer, ngo, admin
  */
 const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    trim: true,
+    maxlength: [100, 'Name cannot exceed 100 characters']
+  },
   firstName: {
     type: String,
-    required: [true, 'First name is required'],
+    required: [false, 'First name is required'],
     trim: true,
     maxlength: [50, 'First name cannot exceed 50 characters']
   },
@@ -60,6 +66,10 @@ const userSchema = new mongoose.Schema({
     },
     registrationNumber: String,
     website: String
+  },
+  city: {
+    type: String,
+    trim: true
   },
   // Address information
   address: {
@@ -190,8 +200,9 @@ userSchema.methods.getPublicProfile = function () {
     name: this.fullName,
     firstName: this.firstName,
     lastName: this.lastName,
-    fullName: this.fullName,
+    fullName: this.fullName || this.name,
     initials: this.initials,
+    city: this.city,
     email: this.email,
     role: this.role,
     phone: this.phone,

@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donate Food - FoodBridge</title>
+  <meta name="description"
+    content="Donate surplus food to those in need. Easy pickup scheduling and real-time tracking." />
+
+  <!-- Tailwind CSS CDN -->
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="../styles/custom.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body data-page="donate" class="font-sans text-slate-800 bg-slate-50 antialiased auth-loading">
+  <!-- Navigation -->
+  <nav id="navbar"
+    class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-2 group">
+          <div
+            class="w-10 h-10 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+            <i class="fas fa-hand-holding-heart text-white text-lg"></i>
+          </div>
+          <span class="text-xl font-bold text-slate-900">FoodBridge</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden lg:flex items-center gap-8">
+          <a href="index.html"
+            class="nav-link text-slate-500 hover:text-emerald-600 font-medium transition-colors">Home</a>
+          <a href="about.html"
+            class="nav-link text-slate-500 hover:text-emerald-600 font-medium transition-colors">About</a>
+          <a href="how-it-works.html"
+            class="nav-link text-slate-500 hover:text-emerald-600 font-medium transition-colors">How It Works</a>
+          <a href="donate.html"
+            class="nav-link text-slate-500 hover:text-emerald-600 font-medium transition-colors">Donate</a>
+          <a href="volunteer.html"
+            class="nav-link text-slate-500 hover:text-emerald-600 font-medium transition-colors">Volunteer</a>
+          <a href="live-map.html"
+            class="nav-link text-slate-500 hover:text-emerald-600 font-medium transition-colors">Live Map</a>
+        </div>
+
+        <!-- Auth Actions -->
+        <div id="navActions" class="hidden lg:flex items-center gap-3">
+          <a href="login.html" class="px-4 py-2 text-gray-700 hover:text-emerald-600 font-medium transition-colors">Log
+            In</a>
+          <a href="signup.html"
+            class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-xl hover:shadow-emerald-700/30 hover:-translate-y-0.5 transition-all">Get
+            Started</a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="menuBtn"
+          class="lg:hidden p-2 bg-emerald-50 rounded-lg text-gray-700 hover:bg-emerald-100 transition-colors"
+          aria-label="Toggle menu" aria-expanded="false">
+          <i class="fas fa-bars text-xl" id="menuIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="lg:hidden hidden bg-white border-t border-gray-100">
+      <div class="px-4 py-4 space-y-2">
+        <a href="index.html"
+          class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">Home</a>
+        <a href="about.html"
+          class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">About</a>
+        <a href="how-it-works.html"
+          class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">How
+          It Works</a>
+        <a href="donate.html"
+          class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">Donate</a>
+        <a href="volunteer.html"
+          class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">Volunteer</a>
+        <a href="live-map.html"
+          class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 font-medium transition-colors">Live
+          Map</a>
+        <div id="mobileAuth" class="pt-4 border-t border-gray-100 space-y-2">
+          <a href="login.html"
+            class="block w-full px-4 py-3 text-center border-2 border-emerald-200 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-50 transition-colors">Log
+            In</a>
+          <a href="signup.html"
+            class="block w-full px-4 py-3 text-center bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold rounded-xl">Get
+            Started</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content - Protected Section -->
+  <main id="donateContent" data-protected-content class="relative min-h-screen overflow-hidden bg-slate-50">
+    <!-- Page Header -->
+    <section class="relative pt-32 lg:pt-40 pb-20 lg:pb-32 overflow-hidden bg-transparent">
+      <div
+        class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/noise-pattern-with-subtle-cross-lines.png')] opacity-[0.02]">
+      </div>
+      <div
+        class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-emerald-400/20 blur-[100px] pointer-events-none">
+      </div>
+      <div
+        class="absolute top-[20%] -right-[10%] w-[40%] h-[60%] rounded-full bg-teal-400/10 blur-[100px] pointer-events-none">
+      </div>
+
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span
+          class="inline-block px-4 py-1.5 mb-6 text-sm font-semibold text-emerald-700 bg-emerald-100/50 border border-emerald-200/50 rounded-full shadow-sm backdrop-blur-md">
+          <i class="fas fa-sparkles mr-1.5 text-emerald-500"></i> High-Impact
+          Donations
+        </span>
+        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-slate-900 tracking-tight mb-6">
+          Fuel the
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Movement.</span>
+        </h1>
+        <p class="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed">
+          Every pound of surplus food donated prevents waste and provides
+          meals directly to communities in need.
+        </p>
+      </div>
+    </section>
+
+    <!-- Main Content Section -->
+    <section class="relative -mt-10 z-10 pb-16 lg:pb-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start max-w-6xl mx-auto">
+          <!-- Left Column: Impact Content & Calculator -->
+          <div class="lg:col-span-5 space-y-8 order-2 lg:order-1">
+            <!-- Key Points -->
+            <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-100 p-8">
+              <h2 class="text-xl font-bold text-slate-900 mb-6">
+                How Your Action Works
+              </h2>
+              <div class="space-y-6">
+                <div class="flex gap-4">
+                  <div
+                    class="flex-shrink-0 w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm border border-slate-100 mb-4">
+                    <i class="fas fa-clipboard-list text-lg"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-slate-900">1. List Items</h4>
+                    <p class="text-sm text-slate-500 mt-1 leading-relaxed">
+                      Specify exactly what you're providing—fresh produce,
+                      cooked meals, or canned goods—for accurate matching.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div
+                    class="flex-shrink-0 w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm border border-slate-100 mb-4">
+                    <i class="fas fa-truck-fast text-lg"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-slate-900">2. We Collect</h4>
+                    <p class="text-sm text-slate-500 mt-1 leading-relaxed">
+                      A verified local FoodBridge volunteer accepts the pickup
+                      automatically based on route efficiency.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div
+                    class="flex-shrink-0 w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm border border-slate-100 mb-4">
+                    <i class="fas fa-handshake-angle text-lg"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-slate-900">
+                      3. Safe Distribution
+                    </h4>
+                    <p class="text-sm text-slate-500 mt-1 leading-relaxed">
+                      The load arrives seamlessly at our partnered kitchens
+                      and verified shelters.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Calculator -->
+            <div
+              class="bg-slate-900 rounded-[24px] p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)] text-white relative overflow-hidden ring-1 ring-slate-800/50">
+              <div
+                class="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10">
+              </div>
+              <h3 class="text-xl font-bold mb-2">Simulate Your Impact</h3>
+              <p class="text-slate-400 text-sm mb-6">
+                See how direct cash equivalents translate into community
+                resilience.
+              </p>
+
+              <div class="flex items-end justify-between mb-4 border-b border-slate-700/50 pb-4">
+                <div>
+                  <span class="block text-slate-400 text-sm font-semibold mb-1">Serving Target</span>
+                  <span class="text-4xl font-extrabold"><span id="impact-calculator-meals">100</span></span>
+                </div>
+                <div class="text-right">
+                  <span class="block text-slate-400 text-sm font-semibold mb-1">Value Equivalent</span>
+                  <span class="text-2xl font-bold">₹<span id="impact-calculator-amount">250</span></span>
+                </div>
+              </div>
+
+              <input type="range" id="impact-calculator-slider" min="50" max="5000" step="50" value="250"
+                class="w-full h-2 bg-slate-800 accent-emerald-500 rounded-lg appearance-none cursor-pointer mb-6 border border-slate-700 hover:bg-slate-700" />
+
+              <div class="flex flex-wrap gap-2">
+                <button
+                  class="impact-preset-btn px-4 py-2 text-sm font-medium rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700/50"
+                  data-amount="250">
+                  Family Route
+                </button>
+                <button
+                  class="impact-preset-btn px-4 py-2 text-sm font-medium rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700/50"
+                  data-amount="1000">
+                  Whole Block
+                </button>
+                <button
+                  class="impact-preset-btn px-4 py-2 text-sm font-medium rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700/50"
+                  data-amount="2500">
+                  School Level
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Donation Form Card -->
+          <div class="lg:col-span-7 order-1 lg:order-2">
+            <div id="donation-form-section"
+              class="bg-white rounded-[24px] p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-100 relative">
+              <!-- Alert Container -->
+              <div id="alertContainer" class="mb-6"></div>
+
+              <form id="donationForm">
+                <!-- Progress Steps visually distinct from logic -->
+                <div class="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 id="formStepLabel" class="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-1">
+                      Step 1 of 2
+                    </h3>
+                    <p class="text-slate-500 text-xs font-semibold">
+                      Fast, secure, and tracked
+                    </p>
+                  </div>
+                  <div class="hidden sm:flex items-center gap-2">
+                    <div class="flex items-center gap-2">
+                      <button type="button" id="stepTab1"
+                        class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-bold">
+                        1. Inventory
+                      </button>
+                      <div class="h-0.5 w-4 bg-slate-200"></div>
+                      <button type="button" id="stepTab2"
+                        class="px-4 py-2 text-slate-400 bg-slate-50 rounded-lg text-sm font-bold">
+                        2. Logistics
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden mb-8">
+                  <div id="formStepProgress"
+                    class="h-full w-1/2 bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500">
+                  </div>
+                </div>
+
+                <!-- ======================== STEP 1 ======================== -->
+                <section id="donationStep1" class="transition-opacity duration-300">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-900">
+                      Food Inventory
+                    </h3>
+                    <button type="button" id="loadTemplateBtn"
+                      class="text-xs font-semibold px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-1">
+                      <i class="fas fa-clock-rotate-left"></i> Load Last
+                    </button>
+                  </div>
+
+                  <!-- Fields Container -->
+                  <div id="foodItemsContainer" class="space-y-4">
+                    <div
+                      class="food-item-row bg-slate-50/80 rounded-2xl p-5 border border-gray-100 shadow-sm relative group">
+                      <div class="space-y-4">
+                        <div>
+                          <input type="text" name="items[0][itemName]"
+                            class="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                            placeholder="E.g. Samosas, Steamed Rice" required />
+                        </div>
+                        <div class="grid grid-cols-12 gap-4">
+                          <div class="relative col-span-12 sm:col-span-6">
+                            <select name="items[0][category]"
+                              class="w-full appearance-none px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                              required>
+                              <option value="">Category</option>
+                              <option value="Cooked Food">Cooked Food</option>
+                              <option value="Raw Ingredients">Raw Ingredients</option>
+                              <option value="Packaged">Packaged</option>
+                              <option value="Baked Goods">Baked Goods</option>
+                              <option value="Beverages">Beverages</option>
+                              <option value="Dairy">Dairy</option>
+                              <option value="Fruits">Fruits</option>
+                              <option value="Vegetables">Vegetables</option>
+                              <option value="Other">Other</option>
+                            </select>
+                            <i
+                              class="fas fa-chevron-down absolute right-4 top-4 text-xs text-slate-400 pointer-events-none"></i>
+                          </div>
+                          <div class="col-span-6 sm:col-span-3">
+                            <input type="number" step="0.01" name="items[0][quantity]"
+                              class="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                              placeholder="Qty" required />
+                          </div>
+                          <div class="col-span-6 sm:col-span-3">
+                            <input type="text" name="items[0][unit]"
+                              class="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                              placeholder="Unit (e.g. kg)" required />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 mb-8">
+                    <button type="button" id="addFoodItem"
+                      class="w-full py-3.5 border-2 border-dashed border-emerald-200 text-emerald-600 bg-emerald-50/50 hover:bg-emerald-50 font-bold rounded-2xl transition-colors flex items-center justify-center gap-2">
+                      <i class="fas fa-plus"></i> Add Item Row
+                    </button>
+                  </div>
+
+                  <!-- Impact Auto-calculation Banner -->
+                  <div
+                    class="p-5 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 border border-emerald-100 flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-4">
+                      <div
+                        class="w-12 h-12 bg-white rounded-xl shadow-sm border border-emerald-100 text-emerald-600 flex items-center justify-center text-xl">
+                        <i class="fas fa-chart-pie"></i>
+                      </div>
+                      <div>
+                        <p class="text-sm font-bold text-slate-900 mb-1">
+                          Impact Preview
+                        </p>
+                        <p class="text-xs text-slate-500">
+                          <span id="impactItemsPreview" class="font-bold text-slate-900">0</span>
+                          items contributing to
+                          <span id="impactMealsPreview" class="font-bold text-emerald-600">0</span>
+                          dynamic servings.
+                        </p>
+                        <p id="impactPolicyHint" class="hidden"></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Primary Call to Action -->
+                  <button type="button" id="nextToStep2"
+                    class="group relative w-full flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-xl hover:shadow-emerald-700/30 transition-transform hover:-translate-y-0.5">
+                    <span class="relative z-10 text-base">Lock & Continue</span>
+                    <i class="fas fa-arrow-right relative z-10 group-hover:translate-x-1 transition-transform"></i>
+                  </button>
+                </section>
+
+                <!-- ======================== STEP 2 ======================== -->
+                <section id="donationStep2" class="hidden transition-opacity duration-300">
+                  <h3 class="text-lg font-bold text-slate-900 mb-4">
+                    Location & Hand-off
+                  </h3>
+
+                  <div class="space-y-4 mb-8">
+                    <input type="text" name="address"
+                      class="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                      placeholder="Complete Street Address" required />
+
+                    <div class="grid grid-cols-2 gap-4">
+                      <input type="text" name="city"
+                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                        placeholder="City" required />
+                      <input type="text" name="state"
+                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                        placeholder="State" value="Karnataka" required />
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      <input type="text" name="zip"
+                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                        placeholder="Postal / ZIP Code" required />
+                      <input type="datetime-local" name="pickup_datetime" id="pickupTimeInput"
+                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                        required />
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 pt-2">
+                      <button type="button"
+                        class="pickup-slot-btn px-4 py-2 text-xs font-bold rounded-lg border border-gray-200 text-slate-500 hover:border-emerald-500 hover:text-emerald-600 bg-white transition-all shadow-sm"
+                        data-offset-hours="2">
+                        <i class="fas fa-bolt mr-1 text-teal-500"></i> Fast
+                        Track (+2h)
+                      </button>
+                      <button type="button"
+                        class="pickup-slot-btn px-4 py-2 text-xs font-bold rounded-lg border border-gray-200 text-slate-500 hover:border-emerald-500 hover:text-emerald-600 bg-white transition-all shadow-sm"
+                        data-offset-hours="4">
+                        Priority (+4h)
+                      </button>
+                      <button type="button"
+                        class="pickup-slot-btn px-4 py-2 text-xs font-bold rounded-lg border border-gray-200 text-slate-500 hover:border-emerald-500 hover:text-emerald-600 bg-white transition-all shadow-sm"
+                        data-slot="tomorrow-morning">
+                        Tomorrow Morning
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="block text-sm font-bold text-slate-900 mb-3">Priority / Urgency</label>
+                    <div class="relative">
+                      <select name="priority"
+                        class="w-full appearance-none px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-emerald-500 transition-all text-sm font-medium text-slate-900"
+                        required>
+                        <option value="low">Low (Flexible timeframe)</option>
+                        <option value="medium" selected>Medium (Standard urgency)</option>
+                        <option value="high">High (Needs pickup soon)</option>
+                        <option value="critical">Critical (Perishable, needs immediate pickup)</option>
+                        <option value="Fast Track (+2h)">Fast Track (+2h)</option>
+                        <option value="Priority (+4h)">Priority (+4h)</option>
+                        <option value="Tomorrow Morning">Tomorrow Morning</option>
+                      </select>
+                      <i
+                        class="fas fa-chevron-down absolute right-4 top-4 text-xs text-slate-400 pointer-events-none"></i>
+                    </div>
+                  </div>
+
+                  <div class="mb-8">
+                    <label class="block text-sm font-bold text-slate-900 mb-3">
+                      Additional Context (Optional)
+                    </label>
+                    <textarea name="notes" rows="3"
+                      class="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-emerald-500 transition-all text-sm font-medium text-slate-800 resize-none"
+                      placeholder="Door codes, specific alleyways, handler name..."></textarea>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <button type="button" id="backToStep1"
+                      class="w-full py-4 border-2 border-gray-200 text-slate-500 hover:text-slate-900 hover:border-gray-300 font-bold rounded-xl transition-colors flex justify-center items-center gap-2">
+                      <i class="fas fa-arrow-left"></i> Edit Details
+                    </button>
+                    <button type="submit" id="submitBtn"
+                      class="group relative w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-xl hover:shadow-emerald-700/30 transition-transform hover:-translate-y-0.5">
+                      <span class="relative z-10 text-base">Broadcast Request</span>
+                      <i class="fas fa-satellite-dish relative z-10"></i>
+                    </button>
+                  </div>
+                </section>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="fas fa-check text-3xl"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-slate-900 mb-2">Thank you!</h3>
+      <p class="text-slate-500 mb-6">
+        Your donation has been successfully submitted. We will notify you once
+        a volunteer is assigned for pickup.
+      </p>
+      <a href="my-donations.html"
+        class="w-full px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-xl hover:shadow-emerald-700/30 transition-all">
+        View My Donations
+      </a>
+    </div>
+  </div>
+
+  <!-- Restriction Popup (soft gate) -->
+  <div id="authOverlay" class="auth-overlay hidden" aria-hidden="true">
+    <div id="donationRestrictionDialog" class="auth-modal donation-restriction-modal" role="dialog" aria-modal="true"
+      aria-labelledby="donationRestrictionTitle" aria-describedby="donationRestrictionMessage" tabindex="-1">
+      <button type="button" id="authOverlayClose" class="donation-restriction-close" aria-label="Close popup">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4">
+        <i id="donationRestrictionIcon" class="fas fa-lock text-xl"></i>
+      </div>
+
+      <h3 id="donationRestrictionTitle" data-auth-title class="text-xl font-bold text-slate-900 mb-2">
+        Sign in to donate
+      </h3>
+      <p id="donationRestrictionMessage" data-auth-message class="text-slate-500 mb-4 text-sm">
+        Log in to enable AI-powered matching, optimized pickups, and tracking
+        for your donation.
+      </p>
+
+      <div class="space-y-2">
+        <a id="authPrimaryAction" data-auth-action href="login.html"
+          class="block w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold rounded-xl text-center hover:shadow-lg transition-all">
+          Log In
+        </a>
+        <a id="authSecondaryAction" data-auth-secondary href="signup.html?role=donor"
+          class="block w-full py-3 border-2 border-emerald-200 text-emerald-600 font-semibold rounded-xl text-center hover:bg-emerald-50 transition-all">
+          Create Donor Account
+        </a>
+        <button type="button" id="authDismissAction"
+          class="block w-full py-2 text-sm text-slate-500 hover:text-gray-700 transition-colors text-center">
+          Continue Browsing
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../services/config.js" defer></script>
+  <script src="../services/app.js" defer></script>
+  <script src="../services/auth-guard.js" defer></script>
+  <script src="../services/donate.js" defer></script>
+</body>
+
+</html>

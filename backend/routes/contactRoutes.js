@@ -1,7 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middlewares/auth');
 
 const {
   submitContactForm,
@@ -37,7 +37,7 @@ const contactValidation = [
 ];
 
 const newsletterValidation = [
-    body('email')
+  body('email')
     .trim()
     .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Please enter a valid email')
@@ -45,13 +45,13 @@ const newsletterValidation = [
 ];
 
 const respondValidation = [
-    body('message')
+  body('message')
     .trim()
     .notEmpty().withMessage('Response message is required')
 ];
 
 const resolveValidation = [
-    body('resolution')
+  body('resolution')
     .trim()
     .notEmpty().withMessage('Resolution details are required')
 ];

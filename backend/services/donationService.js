@@ -1,15 +1,15 @@
 const { GEOCODE_DEFAULT_COUNTRY, extractCoordinates } = require('./geocodingService');
 
 const VALID_FOOD_CATEGORIES = new Set([
-    'cooked',
-    'raw',
-    'packaged',
-    'baked',
-    'beverages',
-    'dairy',
-    'fruits',
-    'vegetables',
-    'other'
+    'Cooked Food',
+    'Raw Ingredients',
+    'Packaged',
+    'Baked Goods',
+    'Beverages',
+    'Dairy',
+    'Fruits',
+    'Vegetables',
+    'Other'
 ]);
 
 const VALID_STORAGE_TYPES = new Set(['room_temp', 'refrigerated', 'frozen', 'heated']);
@@ -188,16 +188,17 @@ function normalizeStringList(value) {
         .filter(Boolean);
 }
 
-function normalizeFoodItemsPayload(foodItems = []) {
-    if (!Array.isArray(foodItems)) return [];
+function normalizeFoodItemsPayload(items = []) {
+    if (!Array.isArray(items)) return [];
 
-    return foodItems
+    return items
         .map((item) => {
-            const name = normalizeTextValue(item?.name);
-            const category = normalizeTextValue(item?.category).toLowerCase();
+            const itemName = normalizeTextValue(item?.itemName || item?.name);
+            const category = normalizeTextValue(item?.category);
             const quantity = normalizeTextValue(item?.quantity);
+            const unit = normalizeTextValue(item?.unit);
 
-            if (!name || !category || !quantity) {
+            if (!itemName || !category || !quantity || !unit) {
                 return null;
             }
 
@@ -205,7 +206,7 @@ function normalizeFoodItemsPayload(foodItems = []) {
                 return null;
             }
 
-            const normalized = { name, category, quantity };
+            const normalized = { itemName, category, quantity, unit };
             const servings = Number(item?.servings);
             const allergens = normalizeStringList(item?.allergens);
             const specialNotes = normalizeTextValue(item?.specialNotes);
@@ -227,33 +228,37 @@ function normalizeFoodItemsPayload(foodItems = []) {
         .filter(Boolean);
 }
 
-function normalizePickupAddressPayload(pickupAddress = {}) {
-    const street = normalizeTextValue(
-        pickupAddress?.street ||
-        pickupAddress?.addressLine1 ||
-        pickupAddress?.address ||
-        pickupAddress?.line1
+function normalizePickupAddressPayload(payload = {}) {
+    const address = normalizeTextValue(
+        payload?.address ||
+        payload?.street ||
+        payload?.pickupAddress?.street ||
+        payload?.pickupAddress?.addressLine1 ||
+        payload?.pickupAddress?.address ||
+        payload?.pickupAddress?.line1
     );
-    const city = normalizeTextValue(pickupAddress?.city);
-    const state = normalizeTextValue(pickupAddress?.state);
-    const zipCode = normalizeTextValue(
-        pickupAddress?.zipCode ||
-        pickupAddress?.postalCode ||
-        pickupAddress?.zipcode ||
-        pickupAddress?.pinCode ||
-        pickupAddress?.pin
+    const city = normalizeTextValue(payload?.city || payload?.pickupAddress?.city);
+    const state = normalizeTextValue(payload?.state || payload?.pickupAddress?.state);
+    const zip = normalizeTextValue(
+        payload?.zip ||
+        payload?.zipCode ||
+        payload?.pickupAddress?.zipCode ||
+        payload?.pickupAddress?.postalCode ||
+        payload?.pickupAddress?.zipcode ||
+        payload?.pickupAddress?.pinCode ||
+        payload?.pickupAddress?.pin
     );
-    const country = normalizeTextValue(pickupAddress?.country || GEOCODE_DEFAULT_COUNTRY);
+    const country = normalizeTextValue(payload?.country || payload?.pickupAddress?.country || GEOCODE_DEFAULT_COUNTRY);
 
     const normalizedAddress = {
-        street,
+        address,
         city,
         state,
-        zipCode,
+        zip,
         country
     };
 
-    const coordinates = extractCoordinates(pickupAddress);
+    const coordinates = extractCoordinates(payload?.pickupAddress || payload);
     if (coordinates) {
         normalizedAddress.coordinates = coordinates;
     }
@@ -306,7 +311,7 @@ function logDonationPayloadSummary(rawPayload, normalizedPayload, donorId) {
         normalizedPayload
     };
 
-    console.log('[Donation] Create request payload summary:', JSON.stringify(summary));
+
 }
 
 module.exports = {

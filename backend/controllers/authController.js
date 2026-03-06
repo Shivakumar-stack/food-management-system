@@ -3,7 +3,7 @@ const Donation = require('../models/Donation');
 const Pickup = require('../models/Pickup');
 const Claim = require('../models/Claim');
 const authService = require('../services/authService');
-const { generateToken } = require('../middleware/auth');
+const { generateToken } = require('../middlewares/auth');
 
 /**
  * @desc    Register a new user
@@ -203,10 +203,10 @@ const getDashboard = async (req, res, next) => {
         dashboardData.stats = {
           totalDonations: user.donorInfo?.totalDonations || 0,
           mealsProvided: user.donorInfo?.mealsProvided || 0,
-          pendingDonations: await Donation.countDocuments({ donor: user._id, status: 'pending' }),
-          completedDonations: await Donation.countDocuments({ donor: user._id, status: 'closed' })
+          pendingDonations: await Donation.countDocuments({ donor_id: user._id, status: 'pending' }),
+          completedDonations: await Donation.countDocuments({ donor_id: user._id, status: 'closed' })
         };
-        dashboardData.recentActivity = await Donation.find({ donor: user._id })
+        dashboardData.recentActivity = await Donation.find({ donor_id: user._id })
           .sort({ createdAt: -1 })
           .limit(5)
           .populate({
@@ -218,65 +218,73 @@ const getDashboard = async (req, res, next) => {
           });
         break;
 
-      case 'volunteer':
-        {
+      case 'volunteer': {
           const pickups = await Pickup.find({ volunteer: user._id })
             .sort({ createdAt: -1 })
             .limit(100)
-            .populate({
-              path: 'donation',
-              populate: {
-                path: 'donor',
-                select: 'firstName lastName organization.name'
-              }
-            });
+            .populate('donation');
 
           const donationDocs = pickups
             .map((pickup) => pickup.donation)
             .filter(Boolean);
 
-          const activeStatuses = new Set(['assigned', 'in_progress']);
-          const completedStatuses = new Set(['completed']);
+          const volunteerStats = await Pickup.aggregate([
+            { $match: { volunteer: user._id } },
+            {
+              $facet: {
+                completedPickups: [
+                  { $match: { status: 'completed' } },
+                  { $count: "count" }
+                ],
+                activePickups: [
+                  { $match: { status: { $in: ['assigned', 'in_progress'] } } },
+                  { $count: "count" }
+                ],
+                totalPickups: [{ $count: "count" }]
+              }
+            }
+          ]);
 
           dashboardData.stats = {
-            completedPickups:
-              pickups.filter((pickup) => completedStatuses.has(pickup.status)).length,
-            rating: user.volunteerInfo?.rating || 5,
-            activePickups:
-              pickups.filter((pickup) => activeStatuses.has(pickup.status)).length,
-            totalPickups: pickups.length
+             completedPickups: volunteerStats[0].completedPickups[0]?.count || 0,
+             rating: user.volunteerInfo?.rating || 5,
+             activePickups: volunteerStats[0].activePickups[0]?.count || 0,
+             totalPickups: volunteerStats[0].totalPickups[0]?.count || 0
           };
 
           dashboardData.recentActivity = donationDocs.slice(0, 5);
         }
         break;
 
-      case 'ngo':
-        {
+      case 'ngo': {
           const claims = await Claim.find({ ngo: user._id })
             .sort({ createdAt: -1 })
             .limit(100)
-            .populate({
-              path: 'donation',
-              populate: {
-                path: 'donor',
-                select: 'firstName lastName organization.name'
-              }
-            });
+            .populate('donation');
 
           const donationIds = claims
             .map((claim) => claim.donation?._id)
             .filter(Boolean);
 
+          const ngoStats = await Donation.aggregate([
+            { $match: { _id: { $in: donationIds } } },
+            {
+              $facet: {
+                totalReceived: [
+                  { $match: { status: 'closed' } },
+                  { $count: "count" }
+                ],
+                pendingDeliveries: [
+                  { $match: { status: { $in: ['pending', 'claimed'] } } },
+                  { $count: "count" }
+                ]
+              }
+            }
+          ]);
+
           dashboardData.stats = {
-            totalReceived: await Donation.countDocuments({
-              _id: { $in: donationIds },
-              status: 'closed'
-            }),
-            pendingDeliveries: await Donation.countDocuments({
-              _id: { $in: donationIds },
-              status: { $in: ['pending', 'claimed'] }
-            }),
+            totalReceived: ngoStats[0].totalReceived[0]?.count || 0,
+            pendingDeliveries: ngoStats[0].pendingDeliveries[0]?.count || 0,
             beneficiaries: user.ngoInfo?.beneficiaries || 0
           };
 
@@ -287,19 +295,58 @@ const getDashboard = async (req, res, next) => {
         }
         break;
 
-      case 'admin':
+      case 'admin': {
+        const adminStats = await Donation.aggregate([
+          {
+            $facet: {
+              totalDonations: [{ $count: "count" }],
+              pendingDonations: [
+                { $match: { status: 'pending' } },
+                { $count: "count" }
+              ],
+              recentDonations: [
+                { 
+                  $match: { 
+                    createdAt: { 
+                      $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
+                    } 
+                  } 
+                },
+                { $count: "count" }
+              ]
+            }
+          }
+        ]);
+
+        const userStats = await User.aggregate([
+          {
+            $facet: {
+              totalUsers: [{ $count: "count" }],
+              activeVolunteers: [
+                { $match: { role: 'volunteer', 'volunteerInfo.isAvailable': true } },
+                { $count: "count" }
+              ],
+              totalNGOs: [
+                { $match: { role: 'ngo' } },
+                { $count: "count" }
+              ]
+            }
+          }
+        ]);
+
         dashboardData.stats = {
-          totalUsers: await User.countDocuments(),
-          totalDonations: await Donation.countDocuments(),
-          pendingDonations: await Donation.countDocuments({ status: 'pending' }),
-          activeVolunteers: await User.countDocuments({ role: 'volunteer', 'volunteerInfo.isAvailable': true }),
-          totalNGOs: await User.countDocuments({ role: 'ngo' }),
-          recentDonations: await Donation.countDocuments({ createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } })
+          totalUsers: userStats[0].totalUsers[0]?.count || 0,
+          totalDonations: adminStats[0].totalDonations[0]?.count || 0,
+          pendingDonations: adminStats[0].pendingDonations[0]?.count || 0,
+          activeVolunteers: userStats[0].activeVolunteers[0]?.count || 0,
+          totalNGOs: userStats[0].totalNGOs[0]?.count || 0,
+          recentDonations: adminStats[0].recentDonations[0]?.count || 0
         };
+
         dashboardData.recentActivity = await Donation.find()
           .sort({ createdAt: -1 })
           .limit(10)
-          .populate('donor', 'firstName lastName')
+          .populate('donor_id', 'firstName lastName')
           .populate({
             path: 'claimedBy',
             populate: {
@@ -308,6 +355,7 @@ const getDashboard = async (req, res, next) => {
             }
           });
         break;
+      }
     }
 
     res.json({

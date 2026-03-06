@@ -1,11 +1,12 @@
 const express = require('express');
 const { body } = require('express-validator');
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middlewares/auth');
 
 const {
   createDonation,
   getDonations,
+  getDonationById,
   getPublicMapDonations,
   getDonationStats,
   getWeeklyTrends,
@@ -17,50 +18,63 @@ const {
 } = require('../controllers/donationController');
 
 const donationValidation = [
-  body('foodItems')
+  body('items')
     .isArray({ min: 1 })
     .withMessage('At least one food item is required'),
-  body('foodItems.*.name')
+  body('items.*.itemName')
     .trim()
     .notEmpty()
     .withMessage('Food item name is required'),
-  body('foodItems.*.category')
+  body('items.*.category')
     .isIn([
-      'cooked',
-      'raw',
-      'packaged',
-      'baked',
-      'beverages',
-      'dairy',
-      'fruits',
-      'vegetables',
-      'other'
+      'Cooked Food',
+      'Raw Ingredients',
+      'Packaged',
+      'Baked Goods',
+      'Beverages',
+      'Dairy',
+      'Fruits',
+      'Vegetables',
+      'Other'
     ])
     .withMessage('Invalid food category'),
-  body('foodItems.*.quantity')
+  body('items.*.quantity')
     .trim()
     .notEmpty()
     .withMessage('Quantity is required'),
-  body('pickupAddress.street')
+  body('items.*.unit')
+    .trim()
+    .notEmpty()
+    .withMessage('Unit is required'),
+  body('address')
     .trim()
     .notEmpty()
     .withMessage('Street address is required'),
-  body('pickupAddress.city')
+  body('city')
     .trim()
     .notEmpty()
     .withMessage('City is required'),
-  body('pickupAddress.state')
+  body('state')
     .trim()
     .notEmpty()
     .withMessage('State is required'),
-  body('pickupAddress.zipCode')
+  body('zip')
     .trim()
     .notEmpty()
     .withMessage('ZIP Code is required'),
-  body('pickupTime')
+  body('pickup_datetime')
     .notEmpty()
     .isISO8601()
-    .withMessage('Invalid pickup time format')
+    .withMessage('Invalid pickup time format'),
+  body('priority')
+    .optional()
+    .isIn(['low', 'medium', 'high', 'critical', 'Fast Track (+2h)', 'Priority (+4h)', 'Tomorrow Morning'])
+    .withMessage('Invalid priority level'),
+  body('notes')
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage('Notes cannot exceed 500 characters')
 ];
 
 router.post('/', authenticate, authorize('donor', 'admin'), donationValidation, createDonation);
@@ -72,6 +86,7 @@ router.get('/stats/admin', authenticate, authorize('admin'), getAdminStats);
 router.put('/:id/status', authenticate, authorize('donor', 'volunteer', 'ngo', 'admin'), updateDonationStatus);
 router.get('/volunteer/available', authenticate, authorize('volunteer'), getAvailableDonationsForVolunteer);
 router.get('/ngo/available', authenticate, authorize('ngo'), getAvailableDonationsForNgo);
+router.get('/:id', authenticate, getDonationById);
 router.put('/:id/claim', authenticate, authorize('ngo'), claimDonation);
 
 module.exports = router;

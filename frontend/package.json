@@ -7,10 +7,10 @@
     "build:css": "npx tailwindcss -i ./css/main.css -o ./css/styles.css --minify",
     "watch:css": "npx tailwindcss -i ./css/main.css -o ./css/styles.css --watch",
     "lint": "echo 'Frontend lint: HTML/CSS validation' && exit 0",
-    "serve": "npx live-server --port=5500 --open=/index.html",
+    "serve": "npx live-server --port=5500 --open=/pages/index.html",
     "test:smoke": "playwright test --config=playwright.smoke.config.js",
     "test:smoke:headed": "playwright test --config=playwright.smoke.config.js --headed",
-    "start": "node server.js",
+    "start": "npm run serve",
     "dev": "npm run serve",
     "prod": "cross-env NODE_ENV=production node server.js",
     "install:all": "npm install && cd frontend && npm install"

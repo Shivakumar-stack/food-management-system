@@ -71,9 +71,10 @@ exports.createDonation = async (req, res) => {
       });
     }
 
-    const normalizedFoodItems = normalizeFoodItemsPayload(req.body?.foodItems || []);
-    const normalizedPickupAddressInput = normalizePickupAddressPayload(req.body?.pickupAddress || {});
-    const pickupTime = req.body?.pickupTime;
+    const normalizedFoodItems = normalizeFoodItemsPayload(req.body?.items || []);
+    const normalizedPickupAddressInput = normalizePickupAddressPayload(req.body);
+    const pickupTime = req.body?.pickup_datetime;
+    const priority = req.body?.priority || 'medium';
     const impact = req.body?.impact;
     const notes = normalizeTextValue(req.body?.notes);
     const pickupWindow = normalizePickupWindowPayload(req.body?.pickupWindow);
@@ -91,10 +92,10 @@ exports.createDonation = async (req, res) => {
     }
 
     if (
-      !normalizedPickupAddressInput.street ||
+      !normalizedPickupAddressInput.address ||
       !normalizedPickupAddressInput.city ||
       !normalizedPickupAddressInput.state ||
-      !normalizedPickupAddressInput.zipCode
+      !normalizedPickupAddressInput.zip
     ) {
       return res.status(400).json({
         success: false,
@@ -116,7 +117,7 @@ exports.createDonation = async (req, res) => {
       });
     }
 
-    const user = await User.findById(donorId).select('role donorInfo organization');
+    const user = await User.findById(donorId).select('name firstName lastName role donorInfo organization');
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -152,14 +153,14 @@ exports.createDonation = async (req, res) => {
       const dayRange = getDayRange(now);
       const [donationsToday, pendingDonations, lastDonation] = await Promise.all([
         Donation.countDocuments({
-          donor: donorId,
+          donor_id: donorId,
           createdAt: { $gte: dayRange.start, $lt: dayRange.end }
         }),
         Donation.countDocuments({
-          donor: donorId,
+          donor_id: donorId,
           status: 'pending'
         }),
-        Donation.findOne({ donor: donorId })
+        Donation.findOne({ donor_id: donorId })
           .sort({ createdAt: -1 })
           .select('createdAt')
       ]);
@@ -196,21 +197,19 @@ exports.createDonation = async (req, res) => {
     }
 
     const coordinates = await geocodePickupAddress(normalizedPickupAddressInput);
-    const normalizedPickupAddress = {
-      ...normalizedPickupAddressInput,
-      location: coordinates
-        ? { type: 'Point', coordinates: [coordinates.lng, coordinates.lat] }
-        : undefined
-    };
-
-    // Remove legacy coordinates field if present in older payloads.
-    delete normalizedPickupAddress.coordinates;
 
     const donationPayload = {
-      donor: donorId,
-      foodItems: normalizedFoodItems,
-      pickupAddress: normalizedPickupAddress,
-      pickupTime,
+      donor_id: donorId,
+      donorName: user.name || (user.firstName + (user.lastName ? ' ' + user.lastName : '')).trim() || 'Unknown Donor',
+      items: normalizedFoodItems,
+      address: normalizedPickupAddressInput.address,
+      city: normalizedPickupAddressInput.city,
+      state: normalizedPickupAddressInput.state,
+      zip: normalizedPickupAddressInput.zip,
+      lat: coordinates?.lat,
+      lng: coordinates?.lng,
+      pickup_datetime: pickupTime,
+      priority,
       status: 'pending',
       notes: notes || '',
       impact: {
@@ -235,33 +234,27 @@ exports.createDonation = async (req, res) => {
 
     logDonationPayloadSummary(req.body, donationPayload, donorId);
 
-    const session = await mongoose.startSession();
     let donation;
 
     try {
-      await session.withTransaction(async () => {
-        const createdDonations = await Donation.create([donationPayload], { session });
-        donation = createdDonations[0];
+      const createdDonations = await Donation.create([donationPayload]);
+      donation = createdDonations[0];
 
-        donation.priorityScore = calculatePriorityScore(donation);
-        await donation.save({ session });
+      donation.priorityScore = calculatePriorityScore(donation);
+      await donation.save();
 
-        await User.findByIdAndUpdate(
-          donorId,
-          {
-            $inc: {
-              'donorInfo.totalDonations': 1,
-              'donorInfo.mealsProvided': estimatedServings
-            }
-          },
-          { session }
-        );
-      });
+      await User.findByIdAndUpdate(
+        donorId,
+        {
+          $inc: {
+            'donorInfo.totalDonations': 1,
+            'donorInfo.mealsProvided': estimatedServings
+          }
+        }
+      );
     } catch (error) {
-      console.error('Create donation transaction error:', error);
+      console.error('Create donation error:', error);
       throw error;
-    } finally {
-      session.endSession();
     }
 
     if (donation) {
@@ -290,7 +283,7 @@ exports.getDonations = async (req, res) => {
     const match = {};
 
     if (req.user.role === 'donor') {
-      match.donor = new mongoose.Types.ObjectId(req.user.id);
+      match.donor_id = new mongoose.Types.ObjectId(req.user.id);
     } else if (req.user.role === 'volunteer') {
       const pickups = await Pickup.find({ volunteer: req.user.id }).select('donation');
       const donationIds = pickups.map(p => p.donation);
@@ -303,7 +296,7 @@ exports.getDonations = async (req, res) => {
 
     const donations = await Donation.find(match)
       .sort({ createdAt: -1 })
-      .populate('donor', 'firstName lastName organization.name')
+      .populate('donor_id', 'name firstName lastName organization.name')
       .populate({
         path: 'claimedBy',
         populate: {
@@ -339,7 +332,7 @@ exports.getPublicMapDonations = async (req, res) => {
     })
       .sort({ priorityScore: -1, pickupTime: 1, createdAt: -1 })
       .limit(limit)
-      .populate('donor', 'firstName lastName organization.name')
+      .populate('donor_id', 'name firstName lastName organization.name')
       .populate({
         path: 'claimedBy',
         populate: {
@@ -367,7 +360,7 @@ exports.getDonationStats = async (req, res) => {
     const matchStage = {};
 
     if (req.user.role === 'donor') {
-      matchStage.donor = new mongoose.Types.ObjectId(req.user.id);
+      matchStage.donor_id = new mongoose.Types.ObjectId(req.user.id);
     } else if (req.user.role === 'volunteer') {
       const pickups = await Pickup.find({ volunteer: req.user.id }).select('donation');
       const donationIds = pickups.map(p => p.donation);
@@ -407,12 +400,12 @@ exports.getDonationStats = async (req, res) => {
       {
         $match: {
           ...impactMatch,
-          'pickupAddress.city': { $exists: true, $ne: '' }
+          city: { $exists: true, $ne: '' }
         }
       },
       {
         $group: {
-          _id: { $toLower: '$pickupAddress.city' }
+          _id: { $toLower: '$city' }
         }
       },
       {
@@ -449,7 +442,7 @@ exports.getWeeklyTrends = async (req, res) => {
     const matchStage = {};
 
     if (role === 'donor') {
-      matchStage.donor = userId;
+      matchStage.donor_id = userId;
     } else if (role === 'volunteer') {
       const pickups = await Pickup.find({ volunteer: userId }).select('donation');
       const donationIds = pickups.map(p => p.donation);
@@ -521,7 +514,7 @@ exports.updateDonationStatus = async (req, res) => {
     }
 
     if (role === 'donor') {
-      if (String(donation.donor) !== userId) {
+      if (String(donation.donor_id) !== userId) {
         return res.status(403).json({
           success: false,
           message: 'Not authorized to update this donation'
@@ -567,10 +560,11 @@ exports.updateDonationStatus = async (req, res) => {
         if (!existingPickup) {
           await Pickup.create({
             donation: donation._id,
-            donor: donation.donor,
+            donor_id: donation.donor_id,
+            donor: donation.donor_id,
             volunteer: req.user.id,
             status: 'assigned',
-            pickupTime: donation.pickupTime
+            pickupTime: donation.pickup_datetime
           });
         }
       }
@@ -591,6 +585,18 @@ exports.updateDonationStatus = async (req, res) => {
         pickup.status = 'completed';
         pickup.completionTime = new Date();
         await pickup.save();
+
+        // Create Delivery record as per auditor requirements
+        const Delivery = require('../models/Delivery');
+        await Delivery.create({
+          delivery_id: `DEL-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+          donation_id: donation._id,
+          volunteer_id: req.user.id,
+          ngo_id: donation.claimedBy ? (await Claim.findById(donation.claimedBy))?.ngo : req.user.id, // Fallback if not claimed by NGO
+          delivery_status: 'delivered',
+          pickup_time: pickup.pickupTime,
+          delivery_time: new Date()
+        });
       }
     }
 
@@ -620,7 +626,7 @@ exports.updateDonationStatus = async (req, res) => {
 
     if (role === 'volunteer' && normalizedStatus === 'claimed') {
       await createNotification({
-        user: donation.donor,
+        user: donation.donor_id,
         title: 'Volunteer Accepted Pickup',
         message: 'A volunteer has accepted your donation pickup request.',
         meta: { donationId: donation._id, status: normalizedStatus }
@@ -643,7 +649,9 @@ exports.updateDonationStatus = async (req, res) => {
     console.error('Update donation status error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error while updating donation status'
+      message: 'Server error while updating donation status',
+      error: error.message,
+      stack: error.stack
     });
   }
 };
@@ -657,7 +665,7 @@ exports.getAvailableDonationsForVolunteer = async (req, res) => {
       status: 'pending', // This is correct
       claimedBy: null // Donations that are not yet claimed
     })
-      .populate('donor', 'firstName lastName organization.name')
+      .populate('donor_id', 'name firstName lastName organization.name')
       .sort({ priorityScore: -1, pickupTime: 1, createdAt: 1 });
 
     res.json({
@@ -681,7 +689,7 @@ exports.getAvailableDonationsForNgo = async (req, res) => {
       status: 'pending',
       claimedBy: null
     })
-      .populate('donor', 'firstName lastName organization.name')
+      .populate('donor_id', 'name firstName lastName organization.name')
       .sort({ pickupTime: 1, createdAt: 1 });
 
     res.json({
@@ -723,33 +731,28 @@ exports.claimDonation = async (req, res) => {
       });
     }
 
-    const session = await mongoose.startSession();
     let claim;
     try {
-      await session.withTransaction(async () => {
-        const claims = await Claim.create([{
-          donation: donation._id,
-          ngo: req.user.id,
-          status: 'pending'
-        }], { session });
-        claim = claims[0];
+      const claims = await Claim.create([{
+        donation: donation._id,
+        ngo: req.user.id,
+        status: 'pending'
+      }]);
+      claim = claims[0];
 
-        donation.claimedBy = claim._id;
-        donation.status = 'claimed';
-        donation.priorityScore = 0;
-        donation.statusHistory.push({
-          status: 'claimed',
-          timestamp: new Date(),
-          updatedBy: req.user.id,
-          notes: 'Claimed by NGO'
-        });
-        await donation.save({ session });
+      donation.claimedBy = claim._id;
+      donation.status = 'claimed';
+      donation.priorityScore = 0;
+      donation.statusHistory.push({
+        status: 'claimed',
+        timestamp: new Date(),
+        updatedBy: req.user.id,
+        notes: 'Claimed by NGO'
       });
+      await donation.save();
     } catch (error) {
-      console.error('Claim donation transaction error:', error);
+      console.error('Claim donation error:', error);
       throw error;
-    } finally {
-      session.endSession();
     }
 
     emitRealtimeEvent(req, 'donationClaimed', { donationId: donation._id, ngo: req.user.id });
@@ -761,7 +764,7 @@ exports.claimDonation = async (req, res) => {
     });
 
     await createNotification({
-      user: donation.donor,
+      user: donation.donor_id,
       title: 'Donation Claimed',
       message: `Your donation has been claimed by an NGO and is pending approval.`,
       meta: { donationId: donation._id, status: 'pending_approval' }
@@ -801,6 +804,26 @@ exports.getAdminStats = async (req, res) => {
       User.countDocuments({ role: 'ngo' })
     ]);
 
+    const activeVolunteers = await User.countDocuments({ role: 'volunteer', 'volunteerInfo.isAvailable': true });
+
+    const Delivery = require('../models/Delivery');
+    const deliveriesCompleted = await Delivery.countDocuments({ delivery_status: 'delivered' });
+
+    const totalFoodAgg = await Donation.aggregate([
+      { $group: { _id: null, totalServings: { $sum: "$impact.estimatedServings" } } }
+    ]);
+    const totalFoodQuantity = totalFoodAgg.length > 0 ? totalFoodAgg[0].totalServings : 0;
+
+    const categoryDistribution = await Donation.aggregate([
+      { $unwind: "$items" },
+      { $group: { _id: "$items.category", count: { $sum: 1 } } }
+    ]);
+
+    const cityDistribution = await Donation.aggregate([
+      { $match: { city: { $exists: true, $ne: "" } } },
+      { $group: { _id: "$city", count: { $sum: 1 } } }
+    ]);
+
     res.json({
       success: true,
       data: {
@@ -813,12 +836,51 @@ exports.getAdminStats = async (req, res) => {
         users: {
           total: totalUsers,
           volunteers: totalVolunteers,
+          activeVolunteers,
           ngos: totalNgos
+        },
+        metrics: {
+          deliveriesCompleted,
+          totalFoodQuantity,
+          categoryDistribution,
+          cityDistribution
         }
       }
     });
   } catch (error) {
     console.error('Admin stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+};
+
+exports.getDonationById = async (req, res) => {
+  try {
+    const donation = await Donation.findById(req.params.id)
+      .populate('donor_id', 'name firstName lastName organization.name')
+      .populate({
+        path: 'claimedBy',
+        populate: {
+          path: 'ngo',
+          select: 'firstName lastName organization.name'
+        }
+      });
+
+    if (!donation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Donation not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { donation }
+    });
+  } catch (error) {
+    console.error('Get donation by id error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'

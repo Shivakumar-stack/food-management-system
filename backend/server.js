@@ -18,16 +18,18 @@ const donationRoutes = require('./routes/donationRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const pickupRoutes = require('./routes/pickupRoutes');
+const volunteerRoutes = require('./routes/volunteerRoutes');
+const deliveryRoutes = require('./routes/deliveryRoutes');
 const Donation = require('./models/Donation');
 
 const app = express();
 const server = http.createServer(app);
 let isShuttingDown = false;
 
-const { initializeSockets } = require('./sockets');
+const { initializeSockets } = require('./services/socketService');
 
 const productionOrigin = env.CLIENT_URL || 'http://localhost:5000';
-const allowedOrigins = [productionOrigin];
+const allowedOrigins = [productionOrigin, 'http://localhost:5000'];
 
 const io = initializeSockets(server, allowedOrigins);
 app.set('io', io);
@@ -88,14 +90,17 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, '../frontend'), { extensions: ['html'] }));
+app.get('/', (req, res) => res.redirect('/pages/index.html'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/donations', donationRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/pickups', pickupRoutes);
+app.use('/api/volunteer', volunteerRoutes);
+app.use('/api/delivery', deliveryRoutes);
 
-const { errorHandler } = require('./middleware/errorHandler');
+const { errorHandler } = require('./middlewares/errorHandler');
 
 app.get('/api/health', async (req, res) => {
   const mongoose = require('mongoose');

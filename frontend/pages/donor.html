@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Donor Portal - FoodBridge</title>
+    <meta
+      name="description"
+      content="Open donor portal. Anyone can view this page; logged-in users can continue to donation tools."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/custom.css" />
+    <link rel="stylesheet" href="../styles/donor.css" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="donor-portal-page">
+    <div class="donor-background-orb donor-background-orb--top-right"></div>
+    <div class="donor-background-orb donor-background-orb--bottom-left"></div>
+    <div class="donor-background-orb donor-background-orb--center-left"></div>
+    <div class="donor-background-orb donor-background-orb--center-right"></div>
+
+    <main class="donor-page-shell relative z-10">
+      <section
+        class="donor-portal-card w-full rounded-3xl p-6 lg:p-10 reveal-block"
+      >
+        <header class="text-center mb-6">
+          <div
+            class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-xl donor-logo"
+          >
+            <i
+              class="fas fa-hand-holding-heart text-white text-3xl"
+              aria-hidden="true"
+            ></i>
+          </div>
+          <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+            Donor Command Center
+          </h1>
+          <p class="text-gray-600 leading-relaxed max-w-2xl mx-auto">
+            Plan donations, monitor impact, and prepare pickup-ready batches
+            with less coordination overhead.
+          </p>
+        </header>
+
+        <section
+          id="donorAccessStrip"
+          class="donor-access-strip px-5 py-3.5 text-sm mb-6 flex items-start gap-3"
+        >
+          <i
+            class="fas fa-circle-info mt-0.5 text-emerald-600"
+            aria-hidden="true"
+          ></i>
+          <p id="donorAccessText">
+            Guest mode: you can browse this page. Login is required for donor
+            actions.
+          </p>
+        </section>
+
+        <div id="alertContainer" class="mb-6" aria-live="polite"></div>
+
+        <section class="grid sm:grid-cols-2 gap-4">
+          <a
+            href="donate.html"
+            class="donor-action-button donor-action-button--primary grid-item block w-full py-4 px-5 text-white rounded-xl font-semibold text-center flex items-center justify-center gap-3"
+            data-requires-auth="true"
+            data-action-label="start a donation"
+            data-requires-role="donor,admin"
+          >
+            <span class="icon-wrapper">
+              <i class="fas fa-heart text-lg"></i>
+            </span>
+            <span>Start Donation</span>
+          </a>
+
+          <a
+            href="dashboard.html"
+            class="donor-action-button donor-action-button--secondary grid-item block w-full py-4 px-5 border-2 border-emerald-200 text-emerald-700 rounded-xl font-semibold text-center flex items-center justify-center gap-3"
+            data-requires-auth="true"
+            data-action-label="open dashboard"
+          >
+            <span class="icon-wrapper">
+              <i class="fas fa-chart-line text-lg"></i>
+            </span>
+            <span>Open Dashboard</span>
+          </a>
+
+          <a
+            href="my-donations.html"
+            class="donor-action-button donor-action-button--secondary grid-item block w-full py-4 px-5 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold text-center flex items-center justify-center gap-3"
+            data-requires-auth="true"
+            data-action-label="view donation history"
+            data-requires-role="donor,admin"
+          >
+            <span class="icon-wrapper">
+              <i class="fas fa-list-check text-lg"></i>
+            </span>
+            <span>Donation History</span>
+          </a>
+
+          <a
+            href="live-map.html"
+            class="donor-action-button donor-action-button--ghost grid-item block w-full py-4 px-5 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold text-center flex items-center justify-center gap-3"
+          >
+            <span class="icon-wrapper">
+              <i class="fas fa-map-location-dot text-lg"></i>
+            </span>
+            <span>View Live Map</span>
+          </a>
+        </section>
+
+        <section id="guestAuthActions" class="grid grid-cols-2 gap-4 pt-6">
+          <a
+            href="login.html"
+            class="donor-action-button donor-action-button--ghost auth-grid-item block py-3.5 px-5 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-center flex items-center justify-center gap-2"
+          >
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Log In</span>
+          </a>
+          <a
+            href="signup.html?role=donor"
+            class="donor-action-button donor-action-button--primary auth-grid-item block py-3.5 px-5 text-white rounded-xl font-medium text-center flex items-center justify-center gap-2"
+          >
+            <i class="fas fa-user-plus"></i>
+            <span>Create Account</span>
+          </a>
+        </section>
+      </section>
+
+      <section class="donor-grid reveal-block">
+        <article class="donor-panel">
+          <div class="donor-panel-head">
+            <h2>Live Impact Snapshot</h2>
+            <p>Operational indicators from the donor network.</p>
+          </div>
+          <div class="donor-metric-grid">
+            <div class="donor-metric-card">
+              <p class="donor-metric-value" data-count="1275">0</p>
+              <p class="donor-metric-label">Meals rescued this week</p>
+            </div>
+            <div class="donor-metric-card">
+              <p class="donor-metric-value" data-count="186">0</p>
+              <p class="donor-metric-label">Pickups completed today</p>
+            </div>
+            <div class="donor-metric-card">
+              <p class="donor-metric-value" data-count="94">0</p>
+              <p class="donor-metric-label">Active donor kitchens</p>
+            </div>
+            <div class="donor-metric-card">
+              <p class="donor-metric-value" data-count="33">0</p>
+              <p class="donor-metric-label">NGO partners online</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="donor-panel">
+          <div class="donor-panel-head">
+            <h2>Suggested Pickup Window</h2>
+            <p>Select a slot to see coordination guidance.</p>
+          </div>
+          <div class="window-chip-row">
+            <button
+              type="button"
+              class="window-chip is-active"
+              data-window-chip
+              data-window-label="Best for cooked meals: Today 12:00 PM - 2:00 PM"
+            >
+              Lunch slot
+            </button>
+            <button
+              type="button"
+              class="window-chip"
+              data-window-chip
+              data-window-label="Best for bakery and packaged items: Today 4:00 PM - 6:00 PM"
+            >
+              Evening slot
+            </button>
+            <button
+              type="button"
+              class="window-chip"
+              data-window-chip
+              data-window-label="Best for bulk distribution and events: Tomorrow 9:00 AM - 11:00 AM"
+            >
+              Morning bulk
+            </button>
+          </div>
+          <p id="windowPreview" class="window-preview">
+            Best for cooked meals: Today 12:00 PM - 2:00 PM
+          </p>
+        </article>
+      </section>
+
+      <section class="donor-panel reveal-block">
+        <div class="donor-panel-head">
+          <h2>Donation Playbooks</h2>
+          <p>Filter by food type and choose the best prep workflow.</p>
+        </div>
+        <div class="catalog-filter-row">
+          <button
+            type="button"
+            class="catalog-filter is-active"
+            data-category-filter="all"
+            aria-pressed="true"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="catalog-filter"
+            data-category-filter="cooked"
+            aria-pressed="false"
+          >
+            Cooked Meals
+          </button>
+          <button
+            type="button"
+            class="catalog-filter"
+            data-category-filter="bakery"
+            aria-pressed="false"
+          >
+            Bakery
+          </button>
+          <button
+            type="button"
+            class="catalog-filter"
+            data-category-filter="produce"
+            aria-pressed="false"
+          >
+            Produce
+          </button>
+          <button
+            type="button"
+            class="catalog-filter"
+            data-category-filter="packaged"
+            aria-pressed="false"
+          >
+            Packaged
+          </button>
+        </div>
+        <p id="catalogHint" class="catalog-hint">
+          Showing all donation playbooks.
+        </p>
+
+        <div class="catalog-grid">
+          <article
+            class="catalog-card"
+            data-category-card
+            data-category="cooked"
+          >
+            <h3>Prepared Meal Batch</h3>
+            <ul>
+              <li>Pack in sealed containers with timestamp labels</li>
+              <li>Mention allergens and reheating instructions</li>
+              <li>Keep ready for pickup within 2-4 hours</li>
+            </ul>
+            <a
+              href="donate.html"
+              class="catalog-link"
+              data-requires-auth="true"
+              data-requires-role="donor,admin"
+              data-action-label="open cooked meal template"
+              >Use this template</a
+            >
+          </article>
+
+          <article
+            class="catalog-card"
+            data-category-card
+            data-category="bakery,packaged"
+          >
+            <h3>Bakery & Dry Goods</h3>
+            <ul>
+              <li>Bundle by product type and quantity</li>
+              <li>Mark best-before dates clearly</li>
+              <li>Use stackable cartons for faster handoff</li>
+            </ul>
+            <a
+              href="donate.html"
+              class="catalog-link"
+              data-requires-auth="true"
+              data-requires-role="donor,admin"
+              data-action-label="open bakery template"
+              >Use this template</a
+            >
+          </article>
+
+          <article
+            class="catalog-card"
+            data-category-card
+            data-category="produce"
+          >
+            <h3>Fresh Produce Lots</h3>
+            <ul>
+              <li>Separate ripe and semi-ripe inventory</li>
+              <li>Avoid overfilled crates to reduce bruising</li>
+              <li>Coordinate same-day pickup for perishables</li>
+            </ul>
+            <a
+              href="donate.html"
+              class="catalog-link"
+              data-requires-auth="true"
+              data-requires-role="donor,admin"
+              data-action-label="open produce template"
+              >Use this template</a
+            >
+          </article>
+
+          <article
+            class="catalog-card"
+            data-category-card
+            data-category="packaged"
+          >
+            <h3>Packaged Inventory</h3>
+            <ul>
+              <li>Group by shelf-life and package size</li>
+              <li>Attach carton-level count summary</li>
+              <li>Prioritize near-expiry boxes first</li>
+            </ul>
+            <a
+              href="donate.html"
+              class="catalog-link"
+              data-requires-auth="true"
+              data-requires-role="donor,admin"
+              data-action-label="open packaged goods template"
+              >Use this template</a
+            >
+          </article>
+        </div>
+      </section>
+
+      <section class="donor-panel reveal-block">
+        <div class="donor-panel-head">
+          <h2>Donor FAQs</h2>
+          <p>Quick answers for pickup and compliance questions.</p>
+        </div>
+        <div class="faq-list">
+          <article class="faq-item">
+            <button
+              type="button"
+              class="faq-trigger"
+              data-faq-trigger
+              aria-expanded="false"
+              aria-controls="faq-panel-1"
+            >
+              <span>How quickly is pickup assigned after submission?</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div id="faq-panel-1" class="faq-content" hidden>
+              Most city zones are matched in under 30 minutes during active
+              hours. High-priority cooked meals are routed first.
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button
+              type="button"
+              class="faq-trigger"
+              data-faq-trigger
+              aria-expanded="false"
+              aria-controls="faq-panel-2"
+            >
+              <span>What details help volunteers pick up faster?</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div id="faq-panel-2" class="faq-content" hidden>
+              Add clear quantity, exact pickup landmark, floor/access notes, and
+              packaging type. This reduces failed attempts and delays.
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button
+              type="button"
+              class="faq-trigger"
+              data-faq-trigger
+              aria-expanded="false"
+              aria-controls="faq-panel-3"
+            >
+              <span>Can I submit recurring donations for daily surplus?</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div id="faq-panel-3" class="faq-content" hidden>
+              Yes. Start with one successful donation, then use the same form
+              pattern for recurring slots. Verified donor accounts get larger
+              limits.
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="donor-grid donor-grid--expanded reveal-block">
+        <article class="donor-panel">
+          <div class="donor-panel-head">
+            <h2>Pre-Pickup Checklist</h2>
+            <p>Track readiness before you hand off food to volunteers.</p>
+          </div>
+          <div class="checklist-list">
+            <label class="checklist-item">
+              <input type="checkbox" data-checklist-item />
+              <span>All containers are sealed and labeled</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" data-checklist-item />
+              <span>Food category and quantity are verified</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" data-checklist-item />
+              <span>Pickup address and contact number are confirmed</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" data-checklist-item />
+              <span>Special handling notes are added for volunteers</span>
+            </label>
+          </div>
+          <div class="checklist-progress">
+            <div class="checklist-progress-meta">
+              <span>Readiness Score</span>
+              <strong id="checklistPercent">0%</strong>
+            </div>
+            <div class="checklist-progress-track">
+              <span id="checklistProgress" style="width: 0%"></span>
+            </div>
+          </div>
+        </article>
+
+        <article class="donor-panel">
+          <div class="donor-panel-head">
+            <h2>Live Coordination Notes</h2>
+            <p>Practical tips shared from active pickup routes.</p>
+          </div>
+          <div class="tip-card">
+            <p id="coordinationTipText">
+              Label the outer box with a single total meal count to reduce
+              handoff time.
+            </p>
+            <button type="button" class="tip-button" id="nextTipBtn">
+              Next tip
+            </button>
+          </div>
+          <ul class="coordination-note-list">
+            <li>Peak routing window: 12:00 PM to 2:00 PM</li>
+            <li>Use landmark-based notes for apartment pickups</li>
+            <li>Separate dry and wet items for safer transport</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+
+    <script src="../services/config.js" defer></script>
+    <script src="../services/app.js" defer></script>
+    <script src="../services/donor.js" defer></script>
+  </body>
+</html>
